@@ -1,0 +1,71 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f9fc;
+    padding: 20px;
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+}
+
+form {
+    background: #fff;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+label {
+    font-weight: 600;
+    color: #555;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="phonenumber"],
+input[type="Address"],
+input[type="City"],
+input[type="Pincode"] {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 6px;
+    margin-bottom: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="phonenumber"]:focus,
+input[type="Address"]:focus,
+input[type="City"]:focus,
+input[type="Pincode"]:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+button[type="submit"] {
+    width: 100%;
+    background-color: #007bff;
+    color: white;
+    font-size: 16px;
+    padding: 12px 0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}

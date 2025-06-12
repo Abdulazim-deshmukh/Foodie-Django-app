@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  .order-history-container {
+    max-width: 800px;
+    margin: auto;
+  }
+
+  .order-history-container h2 {
+    font-weight: 700;
+    color: #343a40;
+  }
+
+  .card-header {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .card-body p {
+    margin-bottom: 8px;
+    font-size: 15px;
+    color: #555;
+  }
+
+  .badge.bg-success {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+
+  .btn-primary {
+    font-size: 15px;
+    padding: 10px 20px;
+  }
+
+  .alert {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 30px;
+    border-radius: 12px;
+    font-size: 16px;
+  }
+</style>
+
+<div class="container py-5 order-history-container">
+  <h2 class="mb-4 text-center">Your Order History</h2>
+
+  {% if orders %}
+    {% for order in orders %}
+    <div class="card mb-4 shadow-sm border-0">
+      <div class="card-header bg-dark text-white rounded-top">
+        <strong>Order #{{ order.orderNo }}</strong> — {{ order.created_at|date:"d M Y, H:i" }}
+      </div>
+      <div class="card-body bg-light rounded-bottom">
+        <p><strong>Status:</strong> {{ order.get_status_display }}</p>
+        <p><strong>Delivery Address:</strong> {{ order.address }}, {{ order.city }}, {{ order.pincode }}, {{ order.state }}</p>
+        <p><strong>Phone:</strong> {{ order.phoneno }}</p>
+        <p><strong>Total Bill:</strong> ₹{{ order.totalbill }}</p>
+        {% if order.status != "PENDING" %}
+          <span class="badge bg-success">Paid</span>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="alert alert-info text-center">
+      <p>You have not placed any orders yet.</p>
+      <a href="{% url 'menu' %}" class="btn btn-primary mt-2">Order Now</a>
+    </div>
+  {% endif %}
+  <div class="back-btn">
+    <a href="{% url 'home' %}">&larr; Back to Home</a>
+</div>
+</div>
+{% endblock %}

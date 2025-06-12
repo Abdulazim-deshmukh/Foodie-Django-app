@@ -1,0 +1,35 @@
+
+{% extends 'base.html' %}
+{% block title %}Customer List{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Customer List</h2>
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>City</th>
+                <th>Pincode</th>
+                <th>Email ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+            <tr>
+                <td>{{ customer.name }}</td>
+                <td>{{ customer.phone }}</td>
+                <td>{{ customer.address }}</td>
+                <td>{{ customer.city }}</td>
+                <td>{{ customer.pincode }}</td>
+                <td>{{ customer.emailId }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">No customers found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %} 

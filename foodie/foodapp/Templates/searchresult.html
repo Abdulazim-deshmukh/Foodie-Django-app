@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Search results for "{{ query }}"{% endblock %}
+
+{% block extra_css %}
+<style>
+  h1 {
+    color: #ff7043;
+    margin-bottom: 1rem;
+    font-weight: 700;
+  }
+  ul.results-list {
+    list-style: none;
+    padding: 0;
+  }
+  ul.results-list li {
+    border-bottom: 1px solid #eee;
+    padding: 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  ul.results-list li:last-child {
+    border-bottom: none;
+  }
+  ul.results-list img {
+    max-width: 100px;
+    height: auto;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+  .item-info {
+    flex-grow: 1;
+  }
+  .item-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #333;
+  }
+  .item-description {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0.3rem 0;
+  }
+  .item-price {
+    font-weight: 600;
+    color: #ff7043;
+  }
+  p.no-results {
+    font-style: italic;
+    color: #999;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+  <h1>Search results for "{{ query }}"</h1>
+
+  {% if results %}
+    <ul class="results-list">
+      {% for item in results %}
+        <li>
+          {% if item.image %}
+            <img src="{{ item.image.url }}" alt="{{ item.name }}">
+          {% endif %}
+          <div class="item-info">
+            <div class="item-name">{{ item.name }}</div>
+            <div class="item-description">{{ item.description }}</div>
+            <div class="item-price">
+                ₹{{ item.price }}</div>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="no-results">No food items found matching "{{ query }}"</p>
+  {% endif %}
+{% endblock %}

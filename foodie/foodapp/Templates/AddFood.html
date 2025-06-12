@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Add Food Item{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=1400&q=80') no-repeat center center fixed;
+        background-size: cover;
+        margin: 0;
+        padding: 0;
+    }
+
+    .form-wrapper {
+        background-color: rgba(255, 255, 255, 0.95);
+        padding: 40px;
+        max-width: 600px;
+        margin: 80px auto;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #333;
+    }
+
+    label {
+        display: block;
+        margin-top: 15px;
+        font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+    }
+
+    .btn-group {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+    }
+
+    button {
+        padding: 12px 20px;
+        background-color: #ff6b6b;
+        border: none;
+        border-radius: 6px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #e94e4e;
+    }
+
+    .back-btn {
+        background-color: #4CAF50;
+    }
+
+    .back-btn:hover {
+        background-color: #3e8e41;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-wrapper">
+    <h2>Add Food Item</h2>
+    <form action="{% url 'food' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="foodname">Name:</label>
+        <input type="text" name="foodname" required>
+
+        <label for="fooddescription">Description:</label>
+        <input type="text" name="fooddescription" required>
+
+        <label for="foodprice">Price:</label>
+        <input type="number" name="foodprice" step="0.01" required>
+
+        <label for="image">Image:</label>
+        <input type="file" name="image">
+
+        <div class="btn-group">
+            <button type="submit">Add Food</button>
+            <a href="{% url 'home' %}">
+                <button type="button" class="back-btn">Back to Home</button>
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

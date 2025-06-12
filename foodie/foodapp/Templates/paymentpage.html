@@ -1,0 +1,107 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  .payment-container {
+    max-width: 500px;
+    margin: auto;
+    background: #fff;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+
+  .payment-container h2 {
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: #343a40;
+  }
+
+  .btn-pay {
+    background-color: #F37254;
+    border: none;
+    padding: 12px 25px;
+    font-size: 18px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-pay:hover {
+    background-color: #d85a3f;
+  }
+</style>
+
+<div class="container py-5">
+  <div class="payment-container">
+    <h2>Complete Your Payment</h2>
+    
+
+    <form id="razorpay-form">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-pay">Pay ₹{{ amount|floatformat:2 }}</button>
+    </form>
+  </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  var options = {
+    "key": "{{ razorpay_key }}",
+    "amount": "{{ amount }}",  // in paise
+    "currency": "INR",
+    "order_id": "{{ razorpay_order_id }}",
+    "handler": function (response) {
+      // Create a form dynamically
+      var form = document.createElement('form');
+      form.method = 'POST';
+      form.action = "{% url 'payment_success'  %}";
+
+
+
+
+      // CSRF token
+      var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      var csrfInput = document.createElement('input');
+      csrfInput.type = 'hidden';
+      csrfInput.name = 'csrfmiddlewaretoken';
+      csrfInput.value = csrfToken;
+      form.appendChild(csrfInput);
+
+      // Razorpay order ID
+      var orderInput = document.createElement('input');
+      orderInput.type = 'hidden';
+      orderInput.name = 'razorpay_order_id';
+      orderInput.value = response.razorpay_order_id;
+      form.appendChild(orderInput);
+
+      // Razorpay payment ID
+      var paymentIdInput = document.createElement('input');
+      paymentIdInput.type = 'hidden';
+      paymentIdInput.name = 'razorpay_payment_id';
+      paymentIdInput.value = response.razorpay_payment_id;
+      form.appendChild(paymentIdInput);
+
+     
+
+      document.body.appendChild(form);
+      form.submit();  // Submit to your Django payment_success view
+    },
+    "prefill": {
+      "name": "{{ name }}",
+      "email": "{{ email }}",
+      "contact": "{{ phone }}"
+    },
+    "theme": {
+      "color": "#F37254"
+    }
+  };
+
+  var rzp1 = new Razorpay(options);
+  document.getElementById('razorpay-form').onsubmit = function(e){
+    e.preventDefault();
+    rzp1.open();
+  }
+</script>
+{% endblock %}

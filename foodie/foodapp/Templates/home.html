@@ -1,0 +1,462 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Foodie - Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body, html {
+      height: 100%;
+      font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fafafa;
+      color: #333;
+    }
+
+    /* Navbar */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: linear-gradient(90deg, #56ccf2, #2f80ed);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      z-index: 1000;
+      transition: background 0.3s ease;
+    }
+    nav .logo {
+      color: #fff;
+      font-size: 28px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      cursor: pointer;
+      user-select: none;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 25px;
+      align-items: center;
+    }
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 6px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    nav ul li a:hover {
+      background-color: #ff6347;
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(255, 99, 71, 0.6);
+    }
+    /* Search form */
+    nav form {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    nav input[type="text"] {
+      padding: 8px 15px;
+      border-radius: 25px;
+      border: none;
+      outline: none;
+      width: 180px;
+      transition: width 0.4s ease, box-shadow 0.3s ease;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    nav input[type="text"]:focus {
+      width: 240px;
+      box-shadow: 0 0 8px rgba(255, 99, 71, 0.7);
+    }
+    nav button[type="submit"] {
+      background-color: #ff6347;
+      border: none;
+      color: white;
+      padding: 9px 18px;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(255, 99, 71, 0.5);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    nav button[type="submit"]:hover {
+      background-color: #e5533d;
+      transform: scale(1.1);
+    }
+
+    /* Hero section */
+    .hero {
+      height: 100vh;
+      background: url("{% static 'images/home.png' %}") no-repeat center center/cover;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      text-align: center;
+      padding: 0 20px;
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: -1;
+      backdrop-filter: brightness(0.6);
+    }
+    .hero h1 {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      text-shadow: 3px 3px 15px rgba(0,0,0,0.7);
+      animation: fadeInDown 1.2s ease forwards;
+    }
+    .hero p {
+      font-size: 1.6rem;
+      max-width: 600px;
+      margin-bottom: 40px;
+      text-shadow: 2px 2px 10px rgba(0,0,0,0.6);
+      animation: fadeInUp 1.5s ease forwards;
+    }
+    .hero a.btn {
+      background-color: #ff6347;
+      color: white;
+      padding: 18px 45px;
+      text-decoration: none;
+      font-weight: 700;
+      border-radius: 35px;
+      box-shadow: 0 6px 20px rgba(255, 99, 71, 0.7);
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      animation: pulseBtn 2.5s infinite;
+      display: inline-block;
+      user-select: none;
+    }
+    .hero a.btn:hover {
+      background-color: #e5533d;
+      transform: scale(1.1);
+      box-shadow: 0 8px 25px rgba(229, 83, 61, 0.8);
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+      from {opacity: 0; transform: translateY(-30px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    @keyframes fadeInUp {
+      from {opacity: 0; transform: translateY(30px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    @keyframes pulseBtn {
+      0%, 100% { box-shadow: 0 6px 20px rgba(255, 99, 71, 0.7); }
+      50% { box-shadow: 0 8px 25px rgba(255, 99, 71, 1); }
+    }
+
+    /* Carousel styles */
+    .carousel-container {
+      max-width: 900px;
+      margin: 80px auto 100px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 18px;
+      box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+      background: white;
+    }
+    .carousel-slide {
+      display: flex;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .carousel-item {
+      min-width: 100%;
+      box-sizing: border-box;
+      padding: 25px 30px;
+      display: flex;
+      gap: 25px;
+      align-items: center;
+      transition: transform 0.4s ease;
+    }
+    .carousel-item:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(255, 99, 71, 0.3);
+      border-radius: 18px;
+    }
+    .carousel-item img {
+      width: 320px;
+      border-radius: 18px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      object-fit: cover;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+    .carousel-info {
+      max-width: 520px;
+    }
+    .carousel-info h2 {
+      font-size: 2.4rem;
+      margin-bottom: 20px;
+      color: #222;
+      font-weight: 700;
+    }
+    .carousel-info p {
+      font-size: 1.2rem;
+      color: #555;
+      line-height: 1.5;
+      margin-bottom: 15px;
+      font-weight: 500;
+    }
+    .carousel-info .price {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: #ff6347;
+      letter-spacing: 1.5px;
+    }
+
+    /* Carousel nav buttons */
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(255,255,255,0.9);
+      border: none;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      cursor: pointer;
+      font-size: 28px;
+      font-weight: bold;
+      color: #ff6347;
+      user-select: none;
+      box-shadow: 0 4px 15px rgba(255, 99, 71, 0.4);
+      transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .carousel-btn:hover {
+      background-color: #ff6347;
+      color: white;
+      transform: scale(1.15);
+      box-shadow: 0 6px 20px rgba(255, 99, 71, 0.8);
+    }
+    .carousel-btn.prev {
+      left: 15px;
+    }
+    .carousel-btn.next {
+      right: 15px;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      nav {
+        padding: 15px 20px;
+      }
+      nav ul {
+        gap: 15px;
+      }
+      nav input[type="text"] {
+        width: 140px;
+      }
+      nav input[type="text"]:focus {
+        width: 180px;
+      }
+      nav button[type="submit"] {
+        padding: 7px 14px;
+        font-size: 0.9rem;
+      }
+      .hero h1 {
+        font-size: 3rem;
+      }
+      .hero p {
+        font-size: 1.2rem;
+        max-width: 90%;
+      }
+      .carousel-item {
+        flex-direction: column;
+        padding: 20px 15px;
+      }
+      .carousel-item img {
+        width: 90%;
+        max-width: 300px;
+        margin-bottom: 20px;
+      }
+      .carousel-info {
+        max-width: 100%;
+        text-align: center;
+      }
+      .carousel-info h2 {
+        font-size: 1.8rem;
+      }
+      .carousel-info p {
+        font-size: 1rem;
+      }
+      .carousel-info .price {
+        font-size: 1.3rem;
+      }
+    }
+
+    /* Footer */
+    footer {
+      background: #2f80ed;
+      color: white;
+      text-align: center;
+      padding: 20px 10px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      user-select: none;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">Foodie</div>
+  
+    <form method="GET" action="{% url 'fooditem_search' %}">
+      <input type="text" name="q" placeholder="Search food items..." value="{{ request.GET.q }}">
+      <button type="submit" aria-label="Search food items">🔍</button>
+    </form>
+  
+    <ul class="nav-links d-flex align-items-center">
+      {% if request.session.cust_emailId %}
+        <li class="nav-item me-3">
+          <span class="nav-link text-white fw-semibold" style="pointer-events: none;">
+            Welcome, {{ request.session.customer_name }}
+          </span>
+        </li>
+        <li class="nav-item">
+          <form method="post" action="{% url 'logout' %}" class="d-inline m-0 p-0">
+            {% csrf_token %}
+            <button type="submit"
+                    class="btn btn-outline-light btn-sm fw-semibold"
+                    style="padding: 6px 16px; border-radius: 20px; font-weight: 600; cursor: pointer;">
+              Logout
+            </button>
+          </form>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'view_cart' %}" class="nav-link text-white fw-semibold" style="font-size:1.1rem;">🛒 View Cart</a>
+        </li>
+      {% else %}
+        <li><a href="{% url 'login' %}">Login</a></li>
+        <li><a href="{% url 'register' %}">Register</a></li>  
+      {% endif %}
+    </ul>
+  </nav>
+  
+  <section class="hero">
+    <h1>Delicious Food Delivered To You</h1>
+    <p>Discover your next favorite meal from our delicious menu!</p>
+    <a href="{% url 'menu' %}" class="btn" role="button" aria-label="Explore Menu">Explore Menu</a>
+  </section>
+
+  <section class="carousel-container" aria-label="Featured Food Items">
+    <button class="carousel-btn prev" aria-label="Previous slide">&#10094;</button>
+    <div class="carousel-slide">
+      {% if featured_items %}
+        {% for item in featured_items %}
+        <article class="carousel-item" tabindex="0">
+          {% if item.image %}
+            <img src="{{ item.image.url }}" alt="{{ item.name }}">
+          {% else %}
+            <img src="{% static 'images/default-food.jpg' %}" alt="No image available">
+          {% endif %}
+          <div class="carousel-info">
+            <h2>{{ item.name }}</h2>
+            <p>{{ item.description|truncatewords:25 }}</p>
+            <div class="price">₹{{ item.price }}</div>
+          </div>
+        </article>
+        {% endfor %}
+      {% else %}
+        <article class="carousel-item" tabindex="0">
+          <img src="{% static 'images/pizza.png' %}" alt="Pizza">
+          <div class="carousel-info">
+            <h2>Cheesy Margherita Pizza</h2>
+            <p>Enjoy our best-selling cheesy margherita pizza with hand-tossed crust and fresh toppings.</p>
+            <div class="price">₹399</div>
+          </div>
+        </article>
+        <article class="carousel-item" tabindex="0">
+          <img src="{% static 'images/home.png' %}" alt="Pancake">
+          <div class="carousel-info">
+            <h2>Pancake</h2>
+            <p>Best selling pancakes</p>
+            <div class="price">₹199</div>
+          </div>
+        </article>
+        <article class="carousel-item" tabindex="0">
+          <img src="{% static 'images/burger.png' %}" alt="Burger">
+          <div class="carousel-info">
+            <h2>Classic Chicken Burger</h2>
+            <p>Juicy grilled chicken patty stacked with crisp lettuce and sauces in a soft toasted bun.</p>
+            <div class="price">₹199</div>
+          </div>
+        </article>
+        <article class="carousel-item" tabindex="0">
+          <img src="{% static 'images/pasta.png' %}" alt="Pasta">
+          <div class="carousel-info">
+            <h2>Creamy Alfredo Pasta</h2>
+            <p>Rich and creamy white sauce pasta loaded with cheese and herbs.</p>
+            <div class="price">₹249</div>
+          </div>
+        </article>
+      {% endif %}
+    </div>
+    <button class="carousel-btn next" aria-label="Next slide">&#10095;</button>
+  </section>
+
+  <footer>
+    &copy; {{ current_year }} Foodie. All rights reserved.
+  </footer>
+  
+  <script>
+    const slide = document.querySelector('.carousel-slide');
+    const items = document.querySelectorAll('.carousel-item');
+    const prevBtn = document.querySelector('.carousel-btn.prev');
+    const nextBtn = document.querySelector('.carousel-btn.next');
+
+    let currentIndex = 0;
+
+    function updateSlidePosition() {
+      slide.style.transform = 'translateX(' + (-currentIndex * 100) + '%)';
+    }
+
+    prevBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex === 0) ? items.length -1 : currentIndex - 1;
+      updateSlidePosition();
+    });
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex === items.length -1) ? 0 : currentIndex + 1;
+      updateSlidePosition();
+    });
+
+    // Auto slide every 5 seconds
+    setInterval(() => {
+      nextBtn.click();
+    }, 5000);
+  </script>
+
+</body>
+</html>
+ 
+
+
+ 
+
+ 

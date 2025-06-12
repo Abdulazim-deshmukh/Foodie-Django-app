@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Your custom CSS here, if any */
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2>Register</h2>
+  <form method="post" action="{% url 'register' %}">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="name" class="form-label">Full Name</label>
+      <input type="text" name="name" id="name" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="phone" class="form-label">Phone</label>
+      <input type="text" name="phone" id="phone" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label for="address" class="form-label">Address</label>
+      <textarea name="address" id="address" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label for="city" class="form-label">City</label>
+      <input type="text" name="city" id="city" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label for="pincode" class="form-label">Pincode</label>
+      <input type="text" name="pincode" id="pincode" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">Email ID</label>
+      <input type="email" name="email" id="email" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" name="password" id="password" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="confirm_password" class="form-label">Confirm Password</label>
+      <input type="password" name="confirm_password" id="confirm_password" class="form-control" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Register</button>
+  </form>
+</div>
+{% endblock %}

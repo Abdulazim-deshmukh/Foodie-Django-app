@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+  <body style="font-family: Arial, sans-serif; background-color: #f6f6f6; padding: 20px;">
+    <div style="max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+      <h2 style="color: #28a745;">Order Confirmation</h2>
+      <p>Thank you, <strong>{{ customer.name }}</strong> — your order has been placed successfully!</p>
+
+      <h4>Order Details:</h4>
+      <ul style="padding-left: 0; list-style: none;">
+        <li><strong>Order Number:</strong> {{ order.orderNo }}</li>
+        <li><strong>Status:</strong> {{ order.status }}</li>
+        <li><strong>Total Bill:</strong> ₹{{ order.totalbill }}</li>
+        <li><strong>Shipping Address:</strong> {{ order.address }}, {{ order.city }}, {{ order.pincode }}</li>
+        <li><strong>Phone Number:</strong> {{ order.phoneno }}</li>
+        <li><strong>Order Date:</strong> {{ order.created_at|date:"d M Y H:i" }}</li>
+      </ul>
+
+      <h4>Items Ordered:</h4>
+      <ul>
+        {% for item in order_items %}
+          <li>{{ item.food_item.name }} × {{ item.quantity }}</li>
+        {% endfor %}
+      </ul>
+
+      <p style="margin-top: 30px;">We'll notify you once your order is on the way!</p>
+    </div>
+  </body>
+</html>
+{% endblock %}

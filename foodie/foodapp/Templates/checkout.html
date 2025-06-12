@@ -1,0 +1,81 @@
+<!-- templates/checkout_success.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4 text-center">Checkout</h2>
+
+    {% if cart_items %}
+    <div class="row">
+        <!-- Cart Summary -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Cart Summary</h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover m-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Food Item</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart_items %}
+                            <tr>
+                                <td>{{ item.food_item.name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>₹{{ item.food_item.price }}</td>
+                                <td>₹{{ item.total_price }}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr class="fw-bold table-secondary">
+                                <td colspan="3" class="text-end">Total</td>
+                                <td>₹{{ total_amount }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Form -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Shipping Details</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'place_order' %}">
+                        {% csrf_token %}
+                        {% for field in form %}
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                            <div class="text-danger small">
+                                {{ field.errors|join:", " }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                         <button type="submit" class="btn btn-success w-100 mt-3">Place Order</button> 
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {% else %}
+    <div class="alert alert-info text-center">
+        <p>Your cart is empty.</p>
+        <a href="{% url 'menu' %}" class="btn btn-primary mt-2">Back to Menu</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

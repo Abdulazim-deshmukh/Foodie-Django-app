@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Delete Food Item{% endblock %}
+
+{% block extra_css %}
+<style>
+    .delete-container {
+        max-width: 500px;
+        margin: 100px auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    h2 {
+        color: #d9534f;
+        margin-bottom: 20px;
+    }
+
+    p {
+        font-size: 18px;
+        margin-bottom: 30px;
+    }
+
+    .btn-group {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    button, .cancel-btn {
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    button {
+        background-color: #d9534f;
+        color: white;
+    }
+
+    button:hover {
+        background-color: #c9302c;
+    }
+
+    .cancel-btn {
+        background-color: #5bc0de;
+        color: white;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .cancel-btn:hover {
+        background-color: #31b0d5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="delete-container">
+    <h2>Delete Food Item</h2>
+    <p>Are you sure you want to delete <strong>"{{ food.name }}"</strong>?</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="btn-group">
+            <button type="submit">Yes, Delete</button>
+            <a href="{% url 'menu' %}" class="cancel-btn">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

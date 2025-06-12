@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  .status-container {
+    max-width: 600px;
+    margin: auto;
+    background: #e6ffed;
+    padding: 40px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .status-container h2 {
+    color: #28a745;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  .status-container p {
+    font-size: 18px;
+    color: #333;
+  }
+
+  .order-details {
+    margin-top: 20px;
+    text-align: left;
+  }
+
+  .order-details strong {
+    display: inline-block;
+    width: 120px;
+  }
+</style>
+
+<div class="container py-5">
+  <div class="status-container text-center border rounded p-5 shadow-sm bg-light">
+    <h2 class="text-success mb-4">✅ Payment Successful!</h2>
+    
+    <p class="lead">Thank you for your order, <strong>{{ order.name }}</strong>!</p>
+
+    <div class="order-details mt-4 text-start mx-auto" style="max-width: 400px;">
+      <p><strong>🧾 Order No:</strong> {{ order.orderNo }}</p>
+      <p><strong>💰 Total Bill:</strong> ₹{{ order.totalbill }}</p>
+      <p><strong>📦 Status:</strong> {{ order.status }}</p>
+    </div>
+
+    <p class="mt-4">📧 A confirmation email has been sent to <strong>{{ order.customer.emailId }}</strong>.</p>
+
+    <a href="{% url 'order_history' %}" class="btn btn-primary mt-4">View Order History</a>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,105 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"> {# Responsive #}
+  <title>{% block title %}Foodie{% endblock %}</title>
+
+  <!-- Bootstrap CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+
+
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="padding: 10px;">
+    <div class="container">
+      <a class="navbar-brand" href="{% url 'home' %}">Foodie</a>
+
+      <!-- Toggler/collapsible Button -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#ftco-nav"
+        aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="ftco-nav">
+        <ul class="navbar-nav ms-auto">
+
+          {# Unauthenticated users #}
+          {% if 'cust_emailId' not in request.session and 'admin' not in request.session %}
+          <li class="nav-item"><a href="{% url 'login' %}" class="nav-link text-white fw-bold">Login</a></li>
+          <li class="nav-item"><a href="{% url 'register' %}" class="nav-link text-white fw-bold">Register</a></li>
+          {% endif %}
+
+          {% if request.session.cust_emailId and not request.session.admin %}
+          <li class="nav-item">
+            <a href="{% url 'menu' %}" class="nav-link text-white fw-bold">Menu</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="{% url 'order_history' %}" class="nav-link text-white fw-bold">My Orders</a>
+          </li>
+
+          <li class="nav-item" style="display: flex; align-items: center;">
+            <form method="post" action="{% url 'logout' %}" class="d-inline" style="margin: 0;">
+              {% csrf_token %}
+              <button type="submit"
+                style="background: none; border: none; color: white; font-weight: bold; padding: 6px 12px; cursor: pointer; font-size: 1rem; line-height: 1; vertical-align: middle;">
+                Logout
+              </button>
+            </form>
+          </li>
+
+          {% endif %}
+
+
+          {# Admin logged in #}
+          {% if 'admin' in request.session and 'cust_emailId' not in request.session %}
+          <li class="nav-item">
+            <a href="{% url 'addfood' %}" class="nav-link text-white fw-bold">Add Food</a>
+          </li>
+
+          <li class="nav-item d-flex align-items-center">
+            <form method="post" action="{% url 'logout' %}" class="m-0">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-link nav-link text-white fw-bold p-0 m-0"
+                style="text-decoration: none;">
+                Logout
+              </button>
+            </form>
+          </li>
+
+          <li class="nav-item">
+            <a href="{% url 'customers' %}" class="nav-link text-white fw-bold">Customer List</a>
+          </li>
+
+          <li class="nav-item">
+            <a href="{% url 'menu' %}" class="nav-link text-white fw-bold">Menu</a>
+          </li>
+          {% endif %}
+
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+  <div class="container mt-4">
+    {% block content %}
+    {% endblock %}
+  </div>
+
+  <!-- Bootstrap JS Bundle (with Popper) CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

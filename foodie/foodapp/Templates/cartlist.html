@@ -1,0 +1,98 @@
+
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Your Cart</h2>
+
+    {% if cart_items %}
+        <table class="table table-bordered align-middle text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Food Item</th>
+                    <th>Image</th> {# <-- Added this column header #}
+                    <th>Price (₹)</th>
+                    <th>Quantity</th>
+                    <th>Subtotal (₹)</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr data-item-id="{{ item.id }}">
+                    <td>{{ item.food_item.name }}</td>
+                    <td>
+                        {# Check if the food item has an image #}
+                        {% if item.food_item.image %}
+                            {# Use the .url attribute to get the image path #}
+                            <img src="{{ item.food_item.image.url }}" alt="{{ item.food_item.name }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 5px;">
+                        {% else %}
+                            {# Optional: Display a placeholder image if no image is available #}
+                            <img src="{% static 'images/placeholder.png' %}" alt="No image" style="width: 80px; height: 80px; object-fit: cover; border-radius: 5px;">
+                        {% endif %}
+                    </td> {# <-- Added this cell for the image #}
+                    <td class="price">{{ item.food_item.price }}</td>
+                    <td>
+                        <div class="d-flex justify-content-center align-items-center">
+                            <button onclick="decrease(this.closest('tr'))" class="btn btn-sm btn-outline-secondary me-1">-</button>
+                            <span class="quantity">{{ item.quantity }}</span>
+                            <button onclick="increase(this.closest('tr'))" class="btn btn-sm btn-outline-secondary ms-1">+</button>
+                        </div>
+                        <div class="cid d-none">{{ item.id }}</div>
+                    </td>
+                    <td class="totalPrice">{{ item.total_price|floatformat:2 }}</td>
+                    <td>
+                        <a href="{% url 'delete_cart_item' item.id %}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+         <div class="text-end mt-4">
+            <h4>Total: ₹<span id="total-price">{{ total_amount|floatformat:2 }}</span></h4>
+            <a href="{% url 'checkout' %}" class="btn btn-success btn-lg mt-2">Proceed to Checkout</a>
+        </div>
+
+    {% else %}
+        <div class="alert alert-info mt-4">
+            <p>Your cart is empty.</p>
+            <a href="{% url 'menu' %}" class="btn btn-primary">Browse Food</a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    function increase(row){
+        var q = parseInt(row.querySelector(".quantity").textContent);
+        var price = parseFloat(row.querySelector(".price").textContent);
+        var id = parseInt(row.querySelector(".cid").textContent);
+
+        q++;
+        var tprice = price * q;
+        row.querySelector(".quantity").textContent = q;
+        row.querySelector(".totalPrice").textContent = tprice.toFixed(2);
+
+        window.location.replace("/updateprice/" + id + "/" + q + "/" + tprice.toFixed(2) + "/");
+    }
+
+    function decrease(row){
+        var q = parseInt(row.querySelector(".quantity").textContent);
+        var price = parseFloat(row.querySelector(".price").textContent);
+        var id = parseInt(row.querySelector(".cid").textContent);
+
+        if (q > 1) {
+            q--;
+            var tprice = price * q;
+            row.querySelector(".quantity").textContent = q;
+            row.querySelector(".totalPrice").textContent = tprice.toFixed(2);
+
+            window.location.replace("/updateprice/" + id + "/" + q + "/" + tprice.toFixed(2) + "/");
+        } else {
+            alert("Minimum quantity is 1.");
+        }
+    }
+</script>
+{% endblock %}

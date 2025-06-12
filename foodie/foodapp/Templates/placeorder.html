@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  .order-container {
+    max-width: 600px;
+    margin: 50px auto;
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .order-container h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 700;
+    color: #343a40;
+  }
+
+  .order-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .order-container form input,
+  .order-container form select,
+  .order-container form textarea {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+
+  .order-container button {
+    background-color: #28a745;
+    color: white;
+    padding: 12px;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .order-container button:hover {
+    background-color: #218838;
+  }
+</style>
+
+<div class="container">
+  <div class="order-container">
+    <h2>Place Your Order</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Place Order</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
