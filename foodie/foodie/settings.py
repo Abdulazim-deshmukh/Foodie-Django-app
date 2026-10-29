@@ -262,9 +262,14 @@ AWS_STORAGE_BUCKET_NAME = os.environ.get(
 AWS_ACCESS_KEY_ID = os.environ.get(
     "SUPABASE_S3_ACCESS_KEY"
 )
-
 AWS_SECRET_ACCESS_KEY = os.environ.get(
     "SUPABASE_S3_SECRET_KEY"
+)
+
+# Public URL used by the browser to display images
+AWS_S3_CUSTOM_DOMAIN = (
+    "uwsghmzqtvroobkufudm.supabase.co"
+    "/storage/v1/object/public/food-images"
 )
 
 AWS_S3_FILE_OVERWRITE = False
@@ -272,7 +277,6 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
 
 AWS_QUERYSTRING_AUTH = False
-
 
 # ============================================================
 # MEDIA FILES

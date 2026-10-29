@@ -494,17 +494,27 @@ def login_view(request):
                 customer.password
             ):
 
-                # Try to find the corresponding Django user.
-                legacy_user = User.objects.filter(
-                    username=email
-                ).first()
+                # Find the corresponding Django user.
+                # If this is an older customer account and the
+                # Django User does not exist yet, create it now.
+                legacy_user, created = User.objects.get_or_create(
+                    username=email,
+                    defaults={
+                        "email": email,
+                        "first_name": customer.name
+                    }
+                )
 
-                if legacy_user:
+                # Sync the password from the verified legacy
+                # Customer record into Django authentication.
+                legacy_user.set_password(password)
+                legacy_user.save()
 
-                    login(
-                        request,
-                        legacy_user
-                    )
+                # Log the customer into Django authentication.
+                login(
+                    request,
+                    legacy_user
+                )
 
                 request.session[
                     "cust_emailId"
@@ -537,8 +547,6 @@ def login_view(request):
         request,
         "login.html"
     )
-
-
 @login_required
 def logout_view(request):
     """
