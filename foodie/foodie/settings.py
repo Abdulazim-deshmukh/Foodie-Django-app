@@ -1,3 +1,4 @@
+
 """
 Django settings for the Foodie project.
 """
@@ -221,11 +222,16 @@ STATIC_URL = "/static/"
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+
+# ============================================================
+# STORAGE
+# ============================================================
+
 STORAGES = {
 
     "default": {
         "BACKEND":
-            "django.core.files.storage.FileSystemStorage",
+            "storages.backends.s3.S3Storage",
     },
 
     "staticfiles": {
@@ -233,6 +239,39 @@ STORAGES = {
             "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
+
+
+# ============================================================
+# SUPABASE STORAGE
+# ============================================================
+
+AWS_S3_ENDPOINT_URL = os.environ.get(
+    "SUPABASE_S3_ENDPOINT"
+)
+
+AWS_S3_REGION_NAME = os.environ.get(
+    "SUPABASE_S3_REGION",
+    "eu-west-1",
+)
+
+AWS_STORAGE_BUCKET_NAME = os.environ.get(
+    "SUPABASE_S3_BUCKET",
+    "food-images",
+)
+
+AWS_ACCESS_KEY_ID = os.environ.get(
+    "SUPABASE_S3_ACCESS_KEY"
+)
+
+AWS_SECRET_ACCESS_KEY = os.environ.get(
+    "SUPABASE_S3_SECRET_KEY"
+)
+
+AWS_S3_FILE_OVERWRITE = False
+
+AWS_DEFAULT_ACL = None
+
+AWS_QUERYSTRING_AUTH = False
 
 
 # ============================================================
