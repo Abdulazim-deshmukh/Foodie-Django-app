@@ -1,117 +1,508 @@
-/* static/css/style.css */
+/* =========================================================
+   FOODIE — GLOBAL STYLESHEET
+   static/css/style.css
+   ========================================================= */
 
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding: 0;
+
+/* =========================================================
+   1. ROOT VARIABLES
+   ========================================================= */
+
+:root {
+    --foodie-orange: #ff6f00;
+    --foodie-orange-dark: #e86100;
+    --foodie-orange-light: #fff1e6;
+
+    --foodie-dark: #211b18;
+    --foodie-text: #403730;
+    --foodie-muted: #81766e;
+
+    --foodie-bg: #faf9f7;
+    --foodie-white: #ffffff;
+    --foodie-border: #ebe4de;
+
+    --foodie-success: #2e8b57;
+    --foodie-danger: #d9573f;
+
+    --foodie-shadow:
+        0 14px 40px rgba(35, 24, 17, 0.08);
+
+    --foodie-radius: 12px;
+    --foodie-radius-lg: 20px;
 }
 
+
+/* =========================================================
+   2. GLOBAL RESET
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+
+    background-color: var(--foodie-bg);
+    color: var(--foodie-text);
+
+    font-family:
+        "Inter",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   3. TYPOGRAPHY
+   ========================================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--foodie-dark);
+}
+
+a {
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+
+/* =========================================================
+   4. FORM ELEMENTS
+   ========================================================= */
+
+input,
+textarea,
+select,
+button {
+    font-family: inherit;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+}
+
+
+/* =========================================================
+   5. LEGACY MENU COMPONENTS
+   ---------------------------------------------------------
+   Kept for compatibility with older pages/components.
+   ========================================================= */
+
 .menu-container {
+    width: 100%;
     max-width: 1000px;
     margin: 40px auto;
-    padding: 20px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 30px;
+
+    background-color: var(--foodie-white);
+
+    border: 1px solid var(--foodie-border);
+    border-radius: var(--foodie-radius-lg);
+
+    box-shadow: var(--foodie-shadow);
 }
 
 .menu-container h1 {
+    margin: 0 0 30px;
+
+    color: var(--foodie-dark);
+
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 2rem;
+    font-weight: 700;
+
     text-align: center;
-    color: #333;
-    margin-bottom: 30px;
 }
+
+
+/* =========================================================
+   6. FOOD LIST
+   ========================================================= */
 
 .food-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    gap: 20px;
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(260px, 1fr));
+
+    gap: 22px;
 }
 
+
+/* =========================================================
+   7. FOOD ITEM
+   ========================================================= */
+
 .food-item {
-    width: 300px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
+    width: 100%;
+
     overflow: hidden;
-    background-color: #fafafa;
-    transition: transform 0.2s;
+
+    background-color: var(--foodie-white);
+
+    border: 1px solid var(--foodie-border);
+    border-radius: 14px;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
 }
 
 .food-item:hover {
-    transform: scale(1.02);
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 14px 30px rgba(35, 24, 17, 0.10);
 }
+
+
+/* =========================================================
+   8. FOOD IMAGE
+   ========================================================= */
 
 .food-item img {
     width: 100%;
-    height: 200px;
+    height: 210px;
+
     object-fit: cover;
 }
 
+
+/* =========================================================
+   9. FOOD DETAILS
+   ========================================================= */
+
 .food-details {
-    padding: 15px;
+    padding: 18px;
 }
 
 .food-details h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    color: #444;
+    margin: 0 0 8px;
+
+    color: var(--foodie-dark);
+
+    font-size: 1.15rem;
+    font-weight: 800;
 }
 
 .food-details p {
-    margin: 10px 0;
-    color: #666;
+    margin: 8px 0;
+
+    color: var(--foodie-muted);
+
+    font-size: 0.85rem;
 }
 
+
+/* =========================================================
+   10. FOOD PRICE
+   ========================================================= */
+
 .food-price {
-    font-weight: bold;
-    color: #28a745;
+    color: var(--foodie-orange);
+
+    font-size: 1rem;
+    font-weight: 800;
 }
+
+
+/* =========================================================
+   11. FOOD ACTIONS
+   ========================================================= */
 
 .food-actions {
     display: flex;
+
+    align-items: center;
     justify-content: space-between;
-    margin-top: 15px;
+
+    gap: 8px;
+
+    margin-top: 18px;
 }
 
 .food-actions a {
-    padding: 6px 12px;
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 8px 13px;
+
+    border-radius: 8px;
+
+    font-size: 0.78rem;
+    font-weight: 700;
+
     text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-    font-size: 0.9rem;
-    transition: background-color 0.3s ease;
 }
 
+
+/* =========================================================
+   12. EDIT BUTTON
+   ========================================================= */
+
 .edit-btn {
-    background-color: #007bff;
-    color: white;
+    background-color: #fff1e6;
+    color: var(--foodie-orange);
+
+    border: 1px solid #ffd6b8;
 }
 
 .edit-btn:hover {
-    background-color: #0056b3;
+    background-color: var(--foodie-orange);
+    color: var(--foodie-white);
 }
 
+
+/* =========================================================
+   13. DELETE BUTTON
+   ========================================================= */
+
 .delete-btn {
-    background-color: #dc3545;
-    color: white;
+    background-color: #fff0ed;
+    color: var(--foodie-danger);
+
+    border: 1px solid #f5d0c9;
 }
 
 .delete-btn:hover {
-    background-color: #a71d2a;
+    background-color: var(--foodie-danger);
+    color: var(--foodie-white);
 }
+
+
+/* =========================================================
+   14. BACK BUTTON
+   ========================================================= */
 
 .back-btn {
     margin-top: 40px;
+
     text-align: center;
 }
 
 .back-btn a {
-    color: #007bff;
+    color: var(--foodie-orange);
+
+    font-weight: 700;
+
     text-decoration: none;
-    font-weight: bold;
 }
 
 .back-btn a:hover {
+    color: var(--foodie-orange-dark);
     text-decoration: underline;
+}
+
+
+/* =========================================================
+   15. GENERAL FOODIE BUTTON
+   ---------------------------------------------------------
+   Useful for pages/components that don't have their own
+   button styling.
+   ========================================================= */
+
+.foodie-btn {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    min-height: 44px;
+
+    padding: 0 20px;
+
+    border: 1px solid var(--foodie-orange);
+    border-radius: 9px;
+
+    background-color: var(--foodie-orange);
+    color: var(--foodie-white);
+
+    font-size: 0.78rem;
+    font-weight: 800;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.foodie-btn:hover {
+    background-color: var(--foodie-orange-dark);
+    border-color: var(--foodie-orange-dark);
+    color: var(--foodie-white);
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 8px 20px rgba(255, 111, 0, 0.18);
+}
+
+
+/* =========================================================
+   16. SECONDARY BUTTON
+   ========================================================= */
+
+.foodie-btn-secondary {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    min-height: 44px;
+
+    padding: 0 20px;
+
+    border: 1px solid var(--foodie-border);
+    border-radius: 9px;
+
+    background-color: var(--foodie-white);
+    color: var(--foodie-text);
+
+    font-size: 0.78rem;
+    font-weight: 800;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.foodie-btn-secondary:hover {
+    background-color: #faf8f6;
+    border-color: #cfc5bd;
+    color: var(--foodie-dark);
+}
+
+
+/* =========================================================
+   17. GENERAL CARD
+   ========================================================= */
+
+.foodie-card {
+    background-color: var(--foodie-white);
+
+    border: 1px solid var(--foodie-border);
+    border-radius: var(--foodie-radius-lg);
+
+    box-shadow: var(--foodie-shadow);
+}
+
+
+/* =========================================================
+   18. EMPTY STATE
+   ========================================================= */
+
+.foodie-empty-state {
+    padding: 50px 25px;
+
+    background-color: var(--foodie-white);
+
+    border: 1px solid var(--foodie-border);
+    border-radius: var(--foodie-radius-lg);
+
+    text-align: center;
+}
+
+.foodie-empty-state i {
+    margin-bottom: 15px;
+
+    color: #b6aaa1;
+
+    font-size: 2.5rem;
+}
+
+.foodie-empty-state h3 {
+    margin-bottom: 8px;
+
+    color: var(--foodie-dark);
+
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.foodie-empty-state p {
+    margin: 0;
+
+    color: var(--foodie-muted);
+
+    font-size: 0.78rem;
+}
+
+
+/* =========================================================
+   19. RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .menu-container {
+        margin: 25px 15px;
+        padding: 20px;
+    }
+
+    .food-list {
+        grid-template-columns: 1fr;
+    }
+
+    .food-item img {
+        height: 220px;
+    }
+}
+
+
+@media (max-width: 576px) {
+
+    .menu-container {
+        margin: 20px 12px;
+        padding: 17px;
+        border-radius: 14px;
+    }
+
+    .menu-container h1 {
+        font-size: 1.7rem;
+    }
+
+    .food-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .food-actions a {
+        width: 100%;
+    }
 }

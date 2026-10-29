@@ -1,5 +1,158 @@
-{% extends 'base.html' %}
+{% extends 'Base.html' %}
+
+{% block title %}Logged Out | Foodie{% endblock %}
+
+{% block extra_css %}
+<style>
+    .logout-page {
+        min-height: calc(100vh - 180px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 50px 20px 80px;
+        background:
+            radial-gradient(circle at 8% 5%, rgba(255, 239, 224, 0.85), transparent 28%),
+            #faf9f7;
+    }
+
+    .logout-card {
+        width: 100%;
+        max-width: 500px;
+        padding: 42px 34px;
+        background: #ffffff;
+        border: 1px solid #ebe4de;
+        border-radius: 20px;
+        box-shadow: 0 14px 40px rgba(35, 24, 17, 0.08);
+        text-align: center;
+    }
+
+    .logout-icon {
+        width: 76px;
+        height: 76px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: #fff1e6;
+        color: #ed6500;
+        border: 7px solid #fff8f2;
+        font-size: 1.7rem;
+    }
+
+    .logout-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 11px;
+        margin-bottom: 12px;
+        border-radius: 50px;
+        background: #fff1e6;
+        color: #ed6500;
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+    }
+
+    .logout-card h1 {
+        margin: 0 0 10px;
+        color: #211b18;
+        font-family: "Playfair Display", serif;
+        font-size: clamp(2rem, 5vw, 2.5rem);
+        font-weight: 700;
+    }
+
+    .logout-card p {
+        max-width: 370px;
+        margin: 0 auto 27px;
+        color: #81766e;
+        font-size: 0.78rem;
+        line-height: 1.7;
+    }
+
+    .login-btn {
+        min-height: 46px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 0 25px;
+        border: 1px solid #ff6f00;
+        border-radius: 9px;
+        background: #ff6f00;
+        color: #ffffff;
+        font-size: 0.73rem;
+        font-weight: 800;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .login-btn:hover {
+        background: #e86100;
+        border-color: #e86100;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 9px 22px rgba(255, 111, 0, 0.2);
+    }
+
+    @media (max-width: 600px) {
+
+        .logout-page {
+            padding: 40px 14px 60px;
+        }
+
+        .logout-card {
+            padding: 34px 22px;
+            border-radius: 16px;
+        }
+
+        .login-btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+
 {% block content %}
-<h2>You have been logged out.</h2>
-<a href="{% url 'login' %}">Login again</a>
+
+<section class="logout-page">
+
+    <div class="logout-card">
+
+        <!-- Logout Icon -->
+
+        <div class="logout-icon">
+            <i class="bi bi-box-arrow-right"></i>
+        </div>
+
+
+        <div class="logout-badge">
+            <i class="bi bi-check-circle"></i>
+            Session Ended
+        </div>
+
+
+        <h1>You have been logged out</h1>
+
+
+        <p>
+            Thank you for visiting Foodie.
+            Your account has been safely logged out.
+        </p>
+
+
+        <a
+            href="{% url 'login' %}"
+            class="login-btn"
+        >
+            <i class="bi bi-box-arrow-in-right"></i>
+            Login Again
+        </a>
+
+    </div>
+
+</section>
+
 {% endblock %}

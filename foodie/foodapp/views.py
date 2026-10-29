@@ -1,399 +1,1322 @@
-from django.shortcuts import render,get_object_or_404, redirect
-from django.http import HttpResponse
-from django.contrib import messages
-from django.db.models import Q
-from django.contrib.auth.hashers import check_password,make_password
+"""
+Views for the Foodie application.
+"""
+
+from decimal import Decimal
+
 import razorpay
+
 from django.conf import settings
-from .models import FoodItem
-from .models import Customer
-from .models import FoodCart
-from .models import Orders
-from .forms import OrderForm
-from .models import Payment
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.mail import send_mail
-from django.template.loader import render_to_string
+from django.db.models import Q
+from django.shortcuts import get_object_or_404, redirect, render
+
+from .forms import OrderForm, RegistrationForm
+from .models import Customer, FoodCart, FoodItem, Orders, Payment
 
 
+# ============================================================
+# HOME
+# ============================================================
 
 def home(request):
-    return render(request,'home.html')
+    """
+    Display the Foodie home page.
+    """
+
+    return render(
+        request,
+        "home.html"
+    )
 
 
-#FoodItem Model
+# ============================================================
+# FOOD MANAGEMENT
+# ============================================================
 
+@login_required
 def displayfooditem(request):
-    return render(request,'AddFood.html')
+    """
+    Display the add-food page.
 
+    Only staff users can access food management.
+    """
+
+    if not request.user.is_staff:
+        messages.error(
+            request,
+            "You do not have permission to manage food."
+        )
+        return redirect("home")
+
+    return render(
+        request,
+        "AddFood.html"
+    )
+
+
+@login_required
 def addfooditem(request):
-    if request.method=="POST":
-        name=request.POST['foodname']
-        description=request.POST['fooddescription']
-        price=request.POST['foodprice']
-        image=request.FILES.get("image")
-        data=FoodItem.objects.create(name=name,description=description,price=price,image=image)
-        data.save()
-    return render(request, "AddFood.html")
+    """
+    Add a new food item.
+
+    Only staff users can add food items.
+    """
+
+    if not request.user.is_staff:
+        messages.error(
+            request,
+            "You do not have permission to add food."
+        )
+        return redirect("home")
+
+    if request.method == "POST":
+
+        name = request.POST.get(
+            "foodname",
+            ""
+        ).strip()
+
+        description = request.POST.get(
+            "fooddescription",
+            ""
+        ).strip()
+
+        price = request.POST.get(
+            "foodprice",
+            ""
+        ).strip()
+
+        image = request.FILES.get("image")
+
+        if not name or not description or not price:
+            messages.error(
+                request,
+                "Please fill in all required fields."
+            )
+
+            return render(
+                request,
+                "AddFood.html"
+            )
+
+        try:
+            price = Decimal(price)
+
+            if price < 0:
+                raise ValueError
+
+        except (ValueError, TypeError, ArithmeticError):
+
+            messages.error(
+                request,
+                "Please enter a valid price."
+            )
+
+            return render(
+                request,
+                "AddFood.html"
+            )
+
+        FoodItem.objects.create(
+            name=name,
+            description=description,
+            price=price,
+            image=image
+        )
+
+        messages.success(
+            request,
+            "Food item added successfully."
+        )
+
+        return redirect("menu")
+
+    return render(
+        request,
+        "AddFood.html"
+    )
+
 
 def getfooditem(request):
-    data=FoodItem.objects.all()
-    return render(request,"menu.html",{"menu":data})
+    """
+    Display all food items.
+    """
+
+    data = FoodItem.objects.all().order_by(
+        "name"
+    )
+
+    return render(
+        request,
+        "menu.html",
+        {
+            "menu": data
+        }
+    )
 
 
+@login_required
 def updatefooditem(request, Id):
-    food = get_object_or_404(FoodItem, Id=Id)
+    """
+    Update an existing food item.
+
+    Only staff users can update food items.
+    """
+
+    if not request.user.is_staff:
+        messages.error(
+            request,
+            "You do not have permission to update food."
+        )
+
+        return redirect("home")
+
+    # IMPORTANT:
+    # FoodItem uses Django's default primary key: id
+    food = get_object_or_404(
+        FoodItem,
+        id=Id
+    )
 
     if request.method == "POST":
-        food.name = request.POST.get('foodname')
-        food.description = request.POST.get('fooddescription')
-        food.price = request.POST.get('foodprice')
 
-        # Update image if a new one is uploaded
-        if 'foodimage' in request.FILES:
-            food.image = request.FILES['foodimage']
+        name = request.POST.get(
+            "foodname",
+            ""
+        ).strip()
+
+        description = request.POST.get(
+            "fooddescription",
+            ""
+        ).strip()
+
+        price = request.POST.get(
+            "foodprice",
+            ""
+        ).strip()
+
+        if not name or not description or not price:
+
+            messages.error(
+                request,
+                "Please fill in all required fields."
+            )
+
+            return render(
+                request,
+                "UpdateFood.html",
+                {
+                    "food": food
+                }
+            )
+
+        try:
+            price = Decimal(price)
+
+            if price < 0:
+                raise ValueError
+
+        except (ValueError, TypeError, ArithmeticError):
+
+            messages.error(
+                request,
+                "Please enter a valid price."
+            )
+
+            return render(
+                request,
+                "UpdateFood.html",
+                {
+                    "food": food
+                }
+            )
+
+        food.name = name
+        food.description = description
+        food.price = price
+
+        if "foodimage" in request.FILES:
+            food.image = request.FILES[
+                "foodimage"
+            ]
 
         food.save()
-        return redirect('menu')
 
-    return render(request, 'UpdateFood.html', {'food': food})
+        messages.success(
+            request,
+            "Food item updated successfully."
+        )
 
+        return redirect("menu")
+
+    return render(
+        request,
+        "UpdateFood.html",
+        {
+            "food": food
+        }
+    )
+
+
+@login_required
 def deletefooditem(request, Id):
-    food = get_object_or_404(FoodItem, Id=Id)
+    """
+    Delete a food item.
+
+    Only staff users can delete food items.
+    """
+
+    if not request.user.is_staff:
+        messages.error(
+            request,
+            "You do not have permission to delete food."
+        )
+
+        return redirect("home")
+
+    # IMPORTANT:
+    # FoodItem uses Django's default primary key: id
+    food = get_object_or_404(
+        FoodItem,
+        id=Id
+    )
 
     if request.method == "POST":
-        food.delete()
-        return redirect('menu')
 
-    # Confirm delete page
-    return render(request, 'DeleteFood.html', {'food': food})
+        food.delete()
+
+        messages.success(
+            request,
+            "Food item deleted successfully."
+        )
+
+        return redirect("menu")
+
+    return render(
+        request,
+        "DeleteFood.html",
+        {
+            "food": food
+        }
+    )
+
 
 def fooditem_search(request):
-    query = request.GET.get('q', '')
-    results = []
+    """
+    Search food items by name or description.
+    """
+
+    query = request.GET.get(
+        "q",
+        ""
+    ).strip()
+
+    results = FoodItem.objects.none()
+
     if query:
+
         results = FoodItem.objects.filter(
-            Q(name__icontains=query) | Q(description__icontains=query)
+            Q(name__icontains=query)
+            |
+            Q(description__icontains=query)
+        ).order_by(
+            "name"
         )
-    return render(request, 'searchresult.html', {'results': results, 'query': query})
+
+    return render(
+        request,
+        "searchresult.html",
+        {
+            "results": results,
+            "query": query
+        }
+    )
 
 
-#customer
+# ============================================================
+# AUTHENTICATION
+# ============================================================
 
 def register_customer(request):
+    """
+    Register a new customer using Django's User system.
+    """
+
+    if request.user.is_authenticated:
+        return redirect("home")
+
     if request.method == "POST":
-        name = request.POST.get("name")
-        phone = request.POST.get("phone")
-        address = request.POST.get("address")
-        city = request.POST.get("city")
-        pincode = request.POST.get("pincode")
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        confirm_password = request.POST.get("confirm_password")
 
-        # Basic validations
-        if password != confirm_password:
-            messages.error(request, "Passwords do not match")
-            return render(request, "register.html")
-
-        if Customer.objects.filter(emailId=email).exists():
-            messages.error(request, "Email already registered")
-            return render(request, "register.html")
-
-        # Hash the password
-        hashed_password = make_password(password)
-
-        # Create and save customer with hashed password
-        customer = Customer(
-            name=name,
-            phone=phone,
-            address=address,
-            city=city,
-            pincode=pincode,
-            emailId=email,
-            password=hashed_password
+        form = RegistrationForm(
+            request.POST
         )
-        customer.save()
-        messages.success(request, "Registration successful. Please login.")
-        return redirect('login')  # or whatever your login URL name is
 
-    return render(request, "register.html")
+        if form.is_valid():
 
-def customer_list_view(request):
-    customers = Customer.objects.all()
-    return render(request, 'customerlist.html', {'customers': customers})
+            name = form.cleaned_data[
+                "name"
+            ]
 
+            email = form.cleaned_data[
+                "email"
+            ].lower()
 
+            password = form.cleaned_data[
+                "password"
+            ]
 
+            # Create Django authentication user.
+            user = User.objects.create_user(
+                username=email,
+                email=email,
+                password=password
+            )
 
+            # Create the application's customer profile.
+            Customer.objects.create(
+                name=name,
+                emailId=email,
+                password=""
+            )
+
+            login(
+                request,
+                user
+            )
+
+            messages.success(
+                request,
+                "Account created successfully."
+            )
+
+            return redirect("home")
+
+    else:
+
+        form = RegistrationForm()
+
+    return render(
+        request,
+        "register.html",
+        {
+            "form": form
+        }
+    )
 
 
 def login_view(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+    """
+    Log a customer into the Foodie application.
 
-        # Admin login
-        if email == 'azim@gmail.com' and password == '1234':
-            request.session['admin'] = email
-            return redirect('addfood')
+    Authentication is handled through Django's User system.
+    A legacy Customer-session fallback is retained so that
+    existing customer records remain usable.
+    """
 
-        # Customer login
+    if request.user.is_authenticated:
+        return redirect("home")
+
+    if request.method == "POST":
+
+        email = request.POST.get(
+            "email",
+            ""
+        ).strip().lower()
+
+        password = request.POST.get(
+            "password",
+            ""
+        )
+
+        # ----------------------------------------------------
+        # Django authentication
+        # ----------------------------------------------------
+
+        user = authenticate(
+            request,
+            username=email,
+            password=password
+        )
+
+        if user is not None:
+
+            login(
+                request,
+                user
+            )
+
+            # Keep the legacy customer session available
+            # for the existing cart/order system.
+            try:
+
+                customer = Customer.objects.get(
+                    emailId=email
+                )
+
+                request.session[
+                    "cust_emailId"
+                ] = customer.emailId
+
+                request.session[
+                    "customer_name"
+                ] = customer.name
+
+            except Customer.DoesNotExist:
+
+                pass
+
+            messages.success(
+                request,
+                "Welcome back!"
+            )
+
+            return redirect("home")
+
+        # ----------------------------------------------------
+        # Legacy Customer authentication fallback
+        # ----------------------------------------------------
+
         try:
-            customer = Customer.objects.get(emailId=email)
-            if check_password(password, customer.password):
-                request.session['cust_emailId'] = customer.emailId
-                request.session['customer_name'] = customer.name
-                return redirect('home')
-            else:
-                messages.error(request, 'Incorrect password.')
+
+            customer = Customer.objects.get(
+                emailId=email
+            )
+
+            from django.contrib.auth.hashers import check_password
+
+            if customer.password and check_password(
+                password,
+                customer.password
+            ):
+
+                # Try to find the corresponding Django user.
+                legacy_user = User.objects.filter(
+                    username=email
+                ).first()
+
+                if legacy_user:
+
+                    login(
+                        request,
+                        legacy_user
+                    )
+
+                request.session[
+                    "cust_emailId"
+                ] = customer.emailId
+
+                request.session[
+                    "customer_name"
+                ] = customer.name
+
+                messages.success(
+                    request,
+                    "Welcome back!"
+                )
+
+                return redirect("home")
+
+            messages.error(
+                request,
+                "Incorrect email or password."
+            )
+
         except Customer.DoesNotExist:
-            messages.error(request, 'Customer does not exist.')
 
-    return render(request, 'login.html')
+            messages.error(
+                request,
+                "Incorrect email or password."
+            )
 
+    return render(
+        request,
+        "login.html"
+    )
+
+
+@login_required
 def logout_view(request):
-    request.session.flush()  # Clears all session data
-    return redirect('logout_success')
+    """
+    Log the current user out and clear the legacy session.
+    """
+
+    logout(request)
+
+    request.session.flush()
+
+    return redirect(
+        "logout_success"
+    )
+
 
 def logout_success(request):
-    return render(request, 'logoutsuccess.html')
+    """
+    Display the logout confirmation page.
+    """
+
+    return render(
+        request,
+        "logoutsuccess.html"
+    )
 
 
-#food cart
+# ============================================================
+# CUSTOMER MANAGEMENT
+# ============================================================
 
+@login_required
+def customer_list_view(request):
+    """
+    Display all customers.
+
+    Only staff users can access the customer list.
+    """
+
+    if not request.user.is_staff:
+        messages.error(
+            request,
+            "You do not have permission to view customers."
+        )
+
+        return redirect("home")
+
+    customers = Customer.objects.all().order_by(
+        "name"
+    )
+
+    return render(
+        request,
+        "customerlist.html",
+        {
+            "customers": customers
+        }
+    )
+
+
+# ============================================================
+# CUSTOMER HELPER
+# ============================================================
+
+def get_current_customer(request):
+    """
+    Return the Customer record associated with the
+    currently authenticated user.
+    """
+
+    if not request.user.is_authenticated:
+        return None
+
+    email = (
+        request.user.email
+        or request.user.username
+    )
+
+    if not email:
+        return None
+
+    return Customer.objects.filter(
+        emailId__iexact=email
+    ).first()
+
+
+# ============================================================
+# FOOD CART
+# ============================================================
+
+@login_required
 def view_cart(request):
-    email = request.session.get('cust_emailId')
-    if not email:
-        return redirect('login')
+    """
+    Display the current customer's cart.
+    """
 
-    customer = get_object_or_404(Customer, emailId=email)
-    cart_items = FoodCart.objects.filter(customer=customer)
+    customer = get_current_customer(
+        request
+    )
 
-    total_amount = sum(item.total_price() for item in cart_items)  # call the method here
+    if customer is None:
 
-    return render(request, 'cartlist.html', {
-        'cart_items': cart_items,
-        'total_amount': total_amount
-    })
+        messages.error(
+            request,
+            "Customer profile not found."
+        )
 
-def update_price(request, id, quantity, total):
-    cart_item = get_object_or_404(FoodCart, id=id)
-    
+        return redirect("home")
+
+    cart_items = (
+        FoodCart.objects
+        .filter(customer=customer)
+        .select_related("food_item")
+    )
+
+    total_amount = sum(
+        item.total_price()
+        for item in cart_items
+    )
+
+    return render(
+        request,
+        "cartlist.html",
+        {
+            "cart_items": cart_items,
+            "total_amount": total_amount
+        }
+    )
+
+
+@login_required
+def update_price(
+    request,
+    id,
+    quantity,
+    total
+):
+    """
+    Update the quantity of a cart item.
+
+    The cart item must belong to the current customer.
+    """
+
+    customer = get_current_customer(
+        request
+    )
+
+    if customer is None:
+        return redirect("login")
+
+    cart_item = get_object_or_404(
+        FoodCart,
+        id=id,
+        customer=customer
+    )
+
     if quantity <= 0:
+
         cart_item.delete()
+
     else:
+
         cart_item.quantity = quantity
-        cart_item.save()
-    
-    return redirect('view_cart')
+
+        cart_item.save(
+            update_fields=[
+                "quantity"
+            ]
+        )
+
+    return redirect(
+        "view_cart"
+    )
 
 
-
-
-
+@login_required
 def add_to_cart(request, Id):
-    if 'cust_emailId' not in request.session:
-        return redirect('login')
+    """
+    Add a food item to the current customer's cart.
 
-    customer = Customer.objects.get(emailId=request.session['cust_emailId'])
-    food = get_object_or_404(FoodItem, Id=Id)
+    If the food item is already in the cart,
+    increase its quantity by one.
+    """
 
-    cart_item, created = FoodCart.objects.get_or_create(customer=customer, food_item=food)
+    customer = get_current_customer(
+        request
+    )
+
+    if customer is None:
+
+        messages.error(
+            request,
+            "Please log in to add items to your cart."
+        )
+
+        return redirect("login")
+
+    # IMPORTANT:
+    # FoodItem uses Django's default primary key: id
+    food = get_object_or_404(
+        FoodItem,
+        id=Id
+    )
+
+    cart_item, created = FoodCart.objects.get_or_create(
+        customer=customer,
+        food_item=food
+    )
+
     if not created:
+
         cart_item.quantity += 1
-        cart_item.save()
 
-    return redirect('view_cart')
+        cart_item.save(
+            update_fields=[
+                "quantity"
+            ]
+        )
+
+    messages.success(
+        request,
+        f"{food.name} added to your cart."
+    )
+
+    return redirect(
+        "view_cart"
+    )
 
 
-def delete_cart_item(request, cart_item_id):
-    # Optional: check if user is logged in and owns the cart item
-    email = request.session.get('cust_emailId')
-    if not email:
-        return redirect('login')
+@login_required
+def delete_cart_item(
+    request,
+    cart_item_id
+):
+    """
+    Remove an item from the current customer's cart.
+    """
 
-    customer = get_object_or_404(Customer, emailId=email)
-    cart_item = get_object_or_404(FoodCart, id=cart_item_id, customer=customer)
+    customer = get_current_customer(
+        request
+    )
+
+    if customer is None:
+        return redirect("login")
+
+    cart_item = get_object_or_404(
+        FoodCart,
+        id=cart_item_id,
+        customer=customer
+    )
+
     cart_item.delete()
-    return redirect('view_cart')
 
+    messages.success(
+        request,
+        "Item removed from your cart."
+    )
+
+    return redirect(
+        "view_cart"
+    )
+
+
+# ============================================================
+# CHECKOUT
+# ============================================================
+
+@login_required
 def checkout(request):
-    print("===== CHECKOUT VIEW ACCESSED =====")
-    print("Session keys:", request.session.keys())
-    print("cust_emailId in session:", request.session.get('cust_emailId'))
+    """
+    Display the checkout page.
+    """
 
-    # Get customer email from session
-    email = request.session.get('cust_emailId')
-    if not email:
-        print("Redirecting to login - customer email not in session.")
-        return redirect('login')
+    customer = get_current_customer(
+        request
+    )
 
-    customer = get_object_or_404(Customer, emailId=email)
-    cart_items = FoodCart.objects.filter(customer=customer)
+    if customer is None:
+
+        messages.error(
+            request,
+            "Customer profile not found."
+        )
+
+        return redirect("home")
+
+    cart_items = (
+        FoodCart.objects
+        .filter(customer=customer)
+        .select_related("food_item")
+    )
 
     if not cart_items.exists():
-        print("Cart is empty for:", email)
-        messages.error(request, "Your cart is empty.")
-        return redirect('view_cart')
 
-    total_amount = sum(item.total_price() for item in cart_items)
+        messages.warning(
+            request,
+            "Your cart is empty."
+        )
 
-    print(f"Customer: {customer.name}, Items in cart: {len(cart_items)}, Total: {total_amount}")
+        return redirect(
+            "menu"
+        )
 
-    return render(request, 'checkout.html', {
-        'cart_items': cart_items,
-        'total_amount': total_amount,
-        'customer': customer,
-    })
+    total_amount = sum(
+        item.total_price()
+        for item in cart_items
+    )
+
+    form = OrderForm(
+        initial={
+            "name": customer.name,
+            "address": customer.address or "",
+            "city": customer.city or "",
+            "pincode": customer.pincode or "",
+        }
+    )
+
+    return render(
+        request,
+        "checkout.html",
+        {
+            "form": form,
+            "cart_items": cart_items,
+            "total_amount": total_amount,
+            "customer": customer,
+        }
+    )
 
 
+# ============================================================
+# PLACE ORDER
+# ============================================================
 
-
+@login_required
 def place_order(request):
-    email = request.session.get('cust_emailId')
-    if not email:
-        return redirect('login')
+    """
+    Create an order from the current customer's cart.
+    """
 
-    customer = get_object_or_404(Customer, emailId=email)
-    cart_items = FoodCart.objects.filter(customer=customer)
+    if request.method != "POST":
+        return redirect("checkout")
+
+    customer = get_current_customer(
+        request
+    )
+
+    if customer is None:
+
+        messages.error(
+            request,
+            "Customer profile not found."
+        )
+
+        return redirect("home")
+
+    cart_items = (
+        FoodCart.objects
+        .filter(customer=customer)
+        .select_related("food_item")
+    )
 
     if not cart_items.exists():
-        messages.error(request, "Your cart is empty.")
-        return redirect('view_cart')
 
-    total_amount = sum(item.total_price() for item in cart_items)
+        messages.warning(
+            request,
+            "Your cart is empty."
+        )
 
-    if request.method == 'POST':
-        form = OrderForm(request.POST)
-        if form.is_valid():
-            order = form.save(commit=False)
-            order.customer = customer
-            order.totalbill = total_amount
-            order.save()
+        return redirect(
+            "menu"
+        )
 
-            # Create order number after saving
-            order.orderNo = f"ORDER{order.id:06d}"
-            order.save()
+    form = OrderForm(
+        request.POST
+    )
 
+    if not form.is_valid():
 
-            # Clear cart items from DB
-            cart_items.delete()
+        total_amount = sum(
+            item.total_price()
+            for item in cart_items
+        )
 
-            # Clear session cart if you use session cart (optional)
-            if 'cart' in request.session:
-                del request.session['cart']
-
-
-            messages.success(request, "Order placed successfully!")
-            return redirect('create_razorpay_order', order_id=order.id)
-        else:
-            messages.error(request, "Please fill the form correctly.")
-    else:
-        form = OrderForm()
-
-    context = {
-        'form': form,
-        'cart_items': cart_items,
-        'total_amount': total_amount,
-    }
-    return render(request, 'checkout.html', context)
-
-
-def create_razorpay_order(request, order_id):
-    try:
-        order = get_object_or_404(Orders, pk=order_id)
-        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-        
-        razorpay_order = client.order.create({
-            "amount": int(order.totalbill * 100),
-            "currency": "INR",
-            "payment_capture": 1,
-        })
-
-        payment, created = Payment.objects.get_or_create(
-            order=order,
-            defaults={
-                'razorpay_order_id': razorpay_order['id'],
-                'amount': order.totalbill,
-                'status': 'PENDING',
+        return render(
+            request,
+            "checkout.html",
+            {
+                "form": form,
+                "cart_items": cart_items,
+                "total_amount": total_amount,
+                "customer": customer,
             }
         )
 
-        context = {
-            'order': order,
-            'razorpay_key': settings.RAZORPAY_KEY_ID,
-            'razorpay_order_id': payment.razorpay_order_id,
-            'amount': int(order.totalbill * 100),
-            'name': order.name,
-            'email': order.customer.emailId,
-            'phone': order.phoneno,
+    total_amount = sum(
+        item.total_price()
+        for item in cart_items
+    )
+
+    order = form.save(
+        commit=False
+    )
+
+    order.customer = customer
+    order.totalbill = total_amount
+    order.is_paid = False
+    order.status = "PENDING"
+
+    # Temporary unique order number.
+    order.orderNo = (
+        f"ORDER{customer.orders.count() + 1:06d}"
+    )
+
+    # Make sure the order number remains unique.
+    while Orders.objects.filter(
+        orderNo=order.orderNo
+    ).exists():
+
+        order.orderNo = (
+            f"ORDER{Orders.objects.count() + 1:06d}"
+        )
+
+    order.save()
+
+    # Remove purchased items from the cart.
+    cart_items.delete()
+
+    messages.success(
+        request,
+        "Your order has been created."
+    )
+
+    return redirect(
+        "create_razorpay_order",
+        order_id=order.id
+    )
+
+
+# ============================================================
+# RAZORPAY
+# ============================================================
+
+@login_required
+def create_razorpay_order(
+    request,
+    order_id
+):
+    """
+    Create a Razorpay order for the selected Foodie order.
+    """
+
+    customer = get_current_customer(
+        request
+    )
+
+    if customer is None:
+        return redirect("login")
+
+    order = get_object_or_404(
+        Orders,
+        id=order_id,
+        customer=customer
+    )
+
+    amount = int(
+        order.totalbill * 100
+    )
+
+    client = razorpay.Client(
+        auth=(
+            settings.RAZORPAY_KEY_ID,
+            settings.RAZORPAY_KEY_SECRET
+        )
+    )
+
+    razorpay_order = client.order.create(
+        {
+            "amount": amount,
+            "currency": "INR",
+            "payment_capture": 1,
         }
-        return render(request, 'paymentpage.html', context)
+    )
 
-    except Exception as e:
-        print("Error in create_razorpay_order:", e)
-        raise
+    payment, created = Payment.objects.get_or_create(
+        order=order,
+        defaults={
+            "razorpay_order_id":
+                razorpay_order["id"],
+            "amount":
+                order.totalbill,
+            "status":
+                "PENDING",
+        }
+    )
+
+    if not created:
+
+        payment.razorpay_order_id = (
+            razorpay_order["id"]
+        )
+
+        payment.amount = (
+            order.totalbill
+        )
+
+        payment.status = "PENDING"
+
+        payment.save()
+
+    return render(
+        request,
+        "paymentpage.html",
+        {
+            "order": order,
+            "razorpay_key":
+                settings.RAZORPAY_KEY_ID,
+            "razorpay_order_id":
+                razorpay_order["id"],
+            "amount":
+                amount,
+            "name":
+                order.name,
+            "email":
+                customer.emailId,
+            "phone":
+                order.phoneno,
+        }
+    )
 
 
-from django.shortcuts import render
+# ============================================================
+# PAYMENT SUCCESS
+# ============================================================
 
+@login_required
 def payment_success(request):
-    if request.method == "POST":
-        razorpay_order_id = request.POST.get("razorpay_order_id")
+    """
+    Verify a successful Razorpay payment and update
+    the associated Foodie order.
+    """
 
-        try:
-            payment = Payment.objects.get(razorpay_order_id=razorpay_order_id)
-            payment.status = "SUCCESS"
-            payment.save()
+    if request.method != "POST":
+        return redirect("menu")
 
-            order = payment.order
-            order.is_paid = True
-            order.status = "CONFIRMED"
-            order.save()
+    razorpay_payment_id = request.POST.get(
+        "razorpay_payment_id"
+    )
 
-            customer_email = order.customer.emailId
+    razorpay_order_id = request.POST.get(
+        "razorpay_order_id"
+    )
 
-            # Send confirmation email
-            send_mail(
-                subject="Order Confirmed!",
-                message=f"Hi {order.name},\n\nYour order (ID: {order.orderNo}) was placed successfully!\nTotal: ₹{order.totalbill}\n\nThank you for ordering from Foodie!",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[customer_email],
-                fail_silently=False,
-            )
+    razorpay_signature = request.POST.get(
+        "razorpay_signature"
+    )
 
-            # Render success template
-            return render(request, "paymentsuccess.html", {"order": order})
+    if not all(
+        [
+            razorpay_payment_id,
+            razorpay_order_id,
+            razorpay_signature,
+        ]
+    ):
 
-        except Payment.DoesNotExist:
-            return HttpResponse("<h2 style='color:red;'>❌ Payment Not Found</h2>", status=404)
+        messages.error(
+            request,
+            "Payment verification information is incomplete."
+        )
 
-    return HttpResponse("<h2>Invalid request method.</h2>", status=400)
+        return redirect(
+            "order_history"
+        )
+
+    customer = get_current_customer(
+        request
+    )
+
+    if customer is None:
+        return redirect("login")
+
+    payment = get_object_or_404(
+        Payment.objects.select_related(
+            "order"
+        ),
+        razorpay_order_id=razorpay_order_id,
+        order__customer=customer
+    )
+
+    client = razorpay.Client(
+        auth=(
+            settings.RAZORPAY_KEY_ID,
+            settings.RAZORPAY_KEY_SECRET
+        )
+    )
+
+    try:
+
+        client.utility.verify_payment_signature(
+            {
+                "razorpay_order_id":
+                    razorpay_order_id,
+                "razorpay_payment_id":
+                    razorpay_payment_id,
+                "razorpay_signature":
+                    razorpay_signature,
+            }
+        )
+
+    except razorpay.errors.SignatureVerificationError:
+
+        payment.status = "FAILED"
+
+        payment.save(
+            update_fields=[
+                "status"
+            ]
+        )
+
+        messages.error(
+            request,
+            "Payment verification failed."
+        )
+
+        return redirect(
+            "order_history"
+        )
+
+    payment.razorpay_payment_id = (
+        razorpay_payment_id
+    )
+
+    payment.razorpay_signature = (
+        razorpay_signature
+    )
+
+    payment.status = "SUCCESS"
+
+    payment.save()
+
+    order = payment.order
+
+    order.is_paid = True
+    order.status = "CONFIRMED"
+
+    order.save(
+        update_fields=[
+            "is_paid",
+            "status",
+            "updated_at",
+        ]
+    )
+
+    # Send confirmation email.
+    try:
+
+        send_mail(
+            subject=f"Foodie Order Confirmation - {order.orderNo}",
+            message=(
+                f"Thank you for your order.\n\n"
+                f"Order Number: {order.orderNo}\n"
+                f"Total Amount: ₹{order.totalbill}\n"
+                f"Payment Status: Successful\n"
+                f"Order Status: {order.status}\n"
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[
+                customer.emailId
+            ],
+            fail_silently=True,
+        )
+
+    except Exception:
+        pass
+
+    return render(
+        request,
+        "paymentsuccess.html",
+        {
+            "order": order
+        }
+    )
 
 
+# ============================================================
+# ORDER HISTORY
+# ============================================================
 
+@login_required
 def order_history(request):
-    email = request.session.get('cust_emailId')
-    if not email:
-        return redirect('login')
+    """
+    Display paid orders belonging to the current customer.
+    """
 
-    customer = get_object_or_404(Customer, emailId=email)
-    orders = Orders.objects.filter(customer=customer, is_paid=True).order_by('-created_at')
+    customer = get_current_customer(
+        request
+    )
 
-    return render(request, 'orderhistory.html', {
-        'customer': customer,
-        'orders': orders,
-    })
+    if customer is None:
 
+        messages.error(
+            request,
+            "Customer profile not found."
+        )
+
+        return redirect("home")
+
+    orders = Orders.objects.filter(
+        customer=customer,
+        is_paid=True
+    ).order_by(
+        "-created_at"
+    )
+
+    return render(
+        request,
+        "orderhistory.html",
+        {
+            "orders": orders
+        }
+    )
+
+
+# ============================================================
+# EMAIL CONFIRMATION
+# ============================================================
+
+@login_required
 def send_confirmation_email(request):
-    # Get email from session (e.g., stored at login)
-    email = request.session.get('cust_emailId')
+    """
+    Send a simple confirmation email for an order.
+    """
 
-    if email:
-        subject = 'Order Confirmation - Foodie'
-        message = 'Thank you for your order. Your food is being prepared!'
-        send_mail(subject, message, settings.EMAIL_HOST_USER, [email])
-        return render(request, 'emailconfirmation.html')
-   
+    customer = get_current_customer(
+        request
+    )
 
- 
+    if customer is None:
+        return redirect("login")
+
+    order_id = request.GET.get(
+        "order_id"
+    )
+
+    if not order_id:
+        messages.error(
+            request,
+            "Order information is missing."
+        )
+
+        return redirect(
+            "order_history"
+        )
+
+    order = get_object_or_404(
+        Orders,
+        id=order_id,
+        customer=customer
+    )
+
+    send_mail(
+        subject=f"Foodie Order Confirmation - {order.orderNo}",
+        message=(
+            f"Thank you for ordering from Foodie.\n\n"
+            f"Order Number: {order.orderNo}\n"
+            f"Order Status: {order.status}\n"
+            f"Total Amount: ₹{order.totalbill}\n"
+        ),
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[
+            customer.emailId
+        ],
+        fail_silently=True,
+    )
+
+    messages.success(
+        request,
+        "Confirmation email sent successfully."
+    )
+
+    return redirect(
+        "order_history"
+    )

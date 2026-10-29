@@ -1,38 +1,949 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends 'Base.html' %}
+
+{% block title %}Foodie | Menu{% endblock %}
 
 {% block content %}
-<div class="menu-container">
-    <h1>Our Menu</h1>
-    <div class="food-list">
-        {% for item in menu %}
-        <div class="food-item">
-            {% if item.image %}
-                <img src="{{ item.image.url }}" alt="{{ item.name }}">
-            {% else %}
-                <img src="{% static 'images/default-food.jpg' %}" alt="No image available">
-            {% endif %}
-            <div class="food-details">
-                <h2>{{ item.name }}</h2>
-                <p>{{ item.description }}</p>
-                <p class="food-price">₹{{ item.price }}</p>
-                <div class="food-actions">
-                    {% if 'admin' in request.session %}
-                    <a href="{% url 'updatefood' item.Id %}" class="edit-btn">Edit</a>
-                    <a href="{% url 'deletefood' item.Id %}" class="delete-btn">Delete</a>
-                    {% else %}
-                        <a href="{% url 'add_to_cart' item.Id %}" class="add-cart-btn">Add to Cart</a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        {% empty %}
-        <p>No food items available.</p>
-        {% endfor %}
-    </div>
 
-    <div class="back-btn">
-        <a href="{% url 'home' %}">&larr; Back to Home</a>
-    </div>
+<style>
+
+    /* =========================================================
+       MENU PAGE
+    ========================================================== */
+
+    .menu-page {
+        background: #fafafa;
+        min-height: 100vh;
+        padding-bottom: 80px;
+    }
+
+
+    /* =========================================================
+       MENU HERO
+    ========================================================== */
+
+    .menu-hero {
+        position: relative;
+        overflow: hidden;
+        background:
+            radial-gradient(
+                circle at 90% 20%,
+                rgba(255, 90, 54, 0.10),
+                transparent 28%
+            ),
+            linear-gradient(
+                135deg,
+                #fff,
+                #fff8f5
+            );
+        border-bottom: 1px solid #f0e5e1;
+        padding: 58px 0 48px;
+    }
+
+
+    .menu-hero::after {
+        content: "";
+        position: absolute;
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        background: rgba(255, 90, 54, 0.05);
+        right: -120px;
+        bottom: -150px;
+    }
+
+
+    .menu-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: #ff5a36;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.4px;
+        margin-bottom: 12px;
+    }
+
+
+    .menu-title {
+        position: relative;
+        z-index: 2;
+        color: #171717;
+        font-family: "Playfair Display", serif;
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 800;
+        letter-spacing: -1.8px;
+        margin: 0 0 10px;
+    }
+
+
+    .menu-description {
+        position: relative;
+        z-index: 2;
+        max-width: 580px;
+        color: #737373;
+        font-size: 0.96rem;
+        line-height: 1.8;
+        margin: 0;
+    }
+
+
+    /* =========================================================
+       SEARCH
+    ========================================================== */
+
+    .menu-search-wrapper {
+        position: relative;
+        z-index: 5;
+        margin-top: 28px;
+    }
+
+
+    .menu-search {
+        display: flex;
+        align-items: center;
+        max-width: 590px;
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 13px;
+        padding: 5px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    }
+
+
+    .menu-search-icon {
+        width: 43px;
+        height: 43px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #999;
+        font-size: 1.05rem;
+    }
+
+
+    .menu-search input {
+        flex: 1;
+        min-width: 0;
+        border: 0;
+        outline: none;
+        background: transparent;
+        color: #333;
+        font-size: 0.9rem;
+        padding: 10px 8px;
+    }
+
+
+    .menu-search input::placeholder {
+        color: #aaa;
+    }
+
+
+    .menu-search button {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        border: 0;
+        border-radius: 9px;
+        background: #ff5a36;
+        color: #fff;
+        padding: 11px 17px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+
+    .menu-search button:hover {
+        background: #e84826;
+        transform: translateY(-1px);
+    }
+
+
+    /* =========================================================
+       MENU TOOLBAR
+    ========================================================== */
+
+    .menu-toolbar {
+        padding: 38px 0 24px;
+    }
+
+
+    .menu-count {
+        color: #777;
+        font-size: 0.84rem;
+    }
+
+
+    .menu-count strong {
+        color: #222;
+        font-weight: 800;
+    }
+
+
+    .admin-add-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 10px;
+        background: #171717;
+        color: #fff;
+        text-decoration: none;
+        font-size: 0.82rem;
+        font-weight: 700;
+        transition: 0.2s ease;
+    }
+
+
+    .admin-add-btn:hover {
+        background: #ff5a36;
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+
+    /* =========================================================
+       FOOD GRID
+    ========================================================== */
+
+    .food-grid {
+        padding-bottom: 20px;
+    }
+
+
+    .food-card {
+        height: 100%;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #eaeaea;
+        border-radius: 18px;
+        box-shadow: 0 7px 25px rgba(0, 0, 0, 0.045);
+        transition:
+            transform 0.25s ease,
+            box-shadow 0.25s ease,
+            border-color 0.25s ease;
+    }
+
+
+    .food-card:hover {
+        transform: translateY(-7px);
+        border-color: #f0d0c7;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.09);
+    }
+
+
+    /* =========================================================
+       FOOD IMAGE
+    ========================================================== */
+
+    .food-image-wrapper {
+        position: relative;
+        height: 235px;
+        overflow: hidden;
+        background:
+            linear-gradient(
+                135deg,
+                #fff4ef,
+                #f8f8f8
+            );
+    }
+
+
+    .food-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+
+    .food-card:hover .food-image {
+        transform: scale(1.05);
+    }
+
+
+    .food-image-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ff8063;
+        font-size: 4rem;
+        background:
+            radial-gradient(
+                circle at center,
+                #fff,
+                #fff1ed
+            );
+    }
+
+
+    .food-price-badge {
+        position: absolute;
+        right: 14px;
+        bottom: 14px;
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 11px;
+        border-radius: 9px;
+        background: rgba(23, 23, 23, 0.90);
+        color: #fff;
+        font-size: 0.82rem;
+        font-weight: 800;
+        backdrop-filter: blur(5px);
+    }
+
+
+    /* =========================================================
+       FOOD CONTENT
+    ========================================================== */
+
+    .food-card-body {
+        display: flex;
+        flex-direction: column;
+        padding: 22px;
+        min-height: 245px;
+    }
+
+
+    .food-name {
+        color: #222;
+        font-size: 1.12rem;
+        font-weight: 800;
+        letter-spacing: -0.25px;
+        margin: 0 0 8px;
+    }
+
+.food-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    color: #777;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    margin: 0 0 18px;
+}
+
+
+    .food-card-footer {
+        margin-top: auto;
+    }
+
+
+    .food-price {
+        color: #ff5a36;
+        font-size: 1.15rem;
+        font-weight: 800;
+    }
+
+
+    /* =========================================================
+       CUSTOMER BUTTON
+    ========================================================== */
+
+    .add-cart-btn {
+        width: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 11px 15px;
+        border-radius: 10px;
+        background: #ff5a36;
+        border: 1px solid #ff5a36;
+        color: #fff;
+        text-decoration: none;
+        font-size: 0.84rem;
+        font-weight: 700;
+        transition: 0.2s ease;
+    }
+
+
+    .add-cart-btn:hover {
+        background: #e84826;
+        border-color: #e84826;
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(255, 90, 54, 0.18);
+    }
+
+
+    /* =========================================================
+       LOGIN BUTTON
+    ========================================================== */
+
+    .login-order-btn {
+        width: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 11px 15px;
+        border-radius: 10px;
+        background: #fff7f4;
+        border: 1px solid #ffd9cf;
+        color: #e84826;
+        text-decoration: none;
+        font-size: 0.84rem;
+        font-weight: 700;
+        transition: 0.2s ease;
+    }
+
+
+    .login-order-btn:hover {
+        background: #ff5a36;
+        border-color: #ff5a36;
+        color: #fff;
+    }
+
+
+    /* =========================================================
+       ADMIN ACTIONS
+    ========================================================== */
+
+    .admin-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+
+    .admin-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 9px;
+        border-radius: 9px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+
+
+    .admin-edit {
+        background: #f1f7ff;
+        border: 1px solid #d5e7fb;
+        color: #23679c;
+    }
+
+
+    .admin-edit:hover {
+        background: #23679c;
+        border-color: #23679c;
+        color: #fff;
+    }
+
+
+    .admin-delete {
+        background: #fff1f1;
+        border: 1px solid #f1d0d0;
+        color: #bd3030;
+    }
+
+
+    .admin-delete:hover {
+        background: #bd3030;
+        border-color: #bd3030;
+        color: #fff;
+    }
+
+
+    /* =========================================================
+       EMPTY STATE
+    ========================================================== */
+
+    .empty-menu {
+        max-width: 650px;
+        margin: 45px auto 20px;
+        padding: 65px 30px;
+        text-align: center;
+        background: #fff;
+        border: 1px solid #eaeaea;
+        border-radius: 20px;
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.05);
+    }
+
+
+    .empty-menu-icon {
+        width: 75px;
+        height: 75px;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 22px;
+        background: #fff1ed;
+        color: #ff5a36;
+        font-size: 1.8rem;
+    }
+
+
+    .empty-menu h2 {
+        color: #222;
+        font-family: "Playfair Display", serif;
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin-bottom: 9px;
+    }
+
+
+    .empty-menu p {
+        color: #777;
+        font-size: 0.88rem;
+        margin-bottom: 22px;
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================== */
+
+    @media (max-width: 767.98px) {
+
+        .menu-hero {
+            padding: 45px 0 38px;
+        }
+
+        .menu-title {
+            font-size: 2.7rem;
+        }
+
+        .menu-search {
+            max-width: 100%;
+        }
+
+        .food-image-wrapper {
+            height: 220px;
+        }
+
+    }
+
+
+    @media (max-width: 575.98px) {
+
+        .menu-title {
+            font-size: 2.35rem;
+            letter-spacing: -1px;
+        }
+
+        .menu-search button span {
+            display: none;
+        }
+
+        .menu-search button {
+            width: 44px;
+            height: 43px;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .food-card-body {
+            min-height: auto;
+        }
+
+    }
+
+</style>
+
+
+<div class="menu-page">
+
+
+    <!-- =====================================================
+         MENU HERO
+    ====================================================== -->
+
+    <section class="menu-hero">
+
+        <div class="container">
+
+            <div class="row">
+
+                <div class="col-lg-8">
+
+                    <span class="menu-eyebrow">
+
+                        <i class="bi bi-stars"></i>
+
+                        Foodie's selection
+
+                    </span>
+
+
+                    <h1 class="menu-title">
+                        Explore our menu.
+                    </h1>
+
+
+                    <p class="menu-description">
+
+                        Discover delicious dishes made for every craving.
+                        Choose your favorite, add it to your cart, and
+                        enjoy a simple ordering experience.
+
+                    </p>
+
+
+                    <!-- SEARCH -->
+
+                    <div class="menu-search-wrapper">
+
+                        <form
+                            action="{% url 'fooditem_search' %}"
+                            method="GET"
+                            class="menu-search"
+                        >
+
+                            <span class="menu-search-icon">
+
+                                <i class="bi bi-search"></i>
+
+                            </span>
+
+
+                            <input
+                                type="search"
+                                name="q"
+                                placeholder="Search for a dish..."
+                                aria-label="Search food"
+                            >
+
+
+                            <button type="submit">
+
+                                <i class="bi bi-search"></i>
+
+                                <span>
+                                    Search
+                                </span>
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         TOOLBAR
+    ====================================================== -->
+
+    <section class="menu-toolbar">
+
+        <div class="container">
+
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+
+
+                <div class="menu-count">
+
+                    Showing
+                    <strong>{{ menu|length }}</strong>
+                    {% if menu|length == 1 %}
+                        dish
+                    {% else %}
+                        dishes
+                    {% endif %}
+
+                </div>
+
+
+                {% if user.is_authenticated and user.is_staff %}
+
+                    <a
+                        href="{% url 'addfood' %}"
+                        class="admin-add-btn"
+                    >
+
+                        <i class="bi bi-plus-lg"></i>
+
+                        Add Food
+
+                    </a>
+
+                {% endif %}
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FOOD GRID
+    ====================================================== -->
+
+    <section class="food-grid">
+
+        <div class="container">
+
+
+            {% if menu %}
+
+
+                <div class="row g-4">
+
+
+                    {% for food in menu %}
+
+
+                        <div class="col-sm-6 col-lg-4 col-xl-3">
+
+
+                            <article class="food-card">
+
+
+                                <!-- FOOD IMAGE -->
+
+                                <div class="food-image-wrapper">
+
+
+                                    {% if food.image %}
+
+                                        <img
+                                            src="{{ food.image.url }}"
+                                            alt="{{ food.name }}"
+                                            class="food-image"
+                                            loading="lazy"
+                                        >
+
+                                    {% else %}
+
+                                        <div class="food-image-placeholder">
+
+                                            <i class="bi bi-egg-fried"></i>
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    <span class="food-price-badge">
+
+                                        ₹{{ food.price|floatformat:2 }}
+
+                                    </span>
+
+
+                                </div>
+
+
+                                <!-- FOOD DETAILS -->
+
+                                <div class="food-card-body">
+
+
+                                    <h2 class="food-name">
+                                        {{ food.name }}
+                                    </h2>
+
+
+                                    <p class="food-description">
+                                        {{ food.description }}
+                                    </p>
+
+
+                                    <div class="food-card-footer">
+
+
+                                        <div class="d-flex align-items-center justify-content-between mb-3">
+
+
+                                            <span class="food-price">
+
+                                                ₹{{ food.price|floatformat:2 }}
+
+                                            </span>
+
+
+                                            <span class="text-muted small">
+
+                                                <i class="bi bi-star-fill text-warning"></i>
+
+                                                Delicious
+
+                                            </span>
+
+
+                                        </div>
+
+
+                                        <!-- STAFF -->
+
+                                        {% if user.is_authenticated and user.is_staff %}
+
+
+                                            <div class="admin-actions">
+
+
+                                                <a
+                                                    href="{% url 'updatefood' food.Id %}"
+                                                    class="admin-action admin-edit"
+                                                >
+
+                                                    <i class="bi bi-pencil"></i>
+
+                                                    Edit
+
+                                                </a>
+
+
+                                                <a
+                                                    href="{% url 'deletefood' food.Id %}"
+                                                    class="admin-action admin-delete"
+                                                >
+
+                                                    <i class="bi bi-trash3"></i>
+
+                                                    Delete
+
+                                                </a>
+
+
+                                            </div>
+
+
+                                        <!-- CUSTOMER -->
+
+                                        {% elif user.is_authenticated %}
+
+
+                                            <a
+                                                href="{% url 'add_to_cart' food.id %}"
+                                                class="add-cart-btn"
+                                            >
+
+                                                <i class="bi bi-bag-plus"></i>
+
+                                                Add to Cart
+
+                                            </a>
+
+
+                                        <!-- GUEST -->
+
+                                        {% else %}
+
+
+                                            <a
+                                                href="{% url 'login' %}"
+                                                class="login-order-btn"
+                                            >
+
+                                                <i class="bi bi-box-arrow-in-right"></i>
+
+                                                Login to Order
+
+                                            </a>
+
+
+                                        {% endif %}
+
+
+                                    </div>
+
+                                </div>
+
+
+                            </article>
+
+
+                        </div>
+
+
+                    {% endfor %}
+
+
+                </div>
+
+
+            {% else %}
+
+
+                <!-- EMPTY MENU -->
+
+                <div class="empty-menu">
+
+
+                    <div class="empty-menu-icon">
+
+                        <i class="bi bi-egg-fried"></i>
+
+                    </div>
+
+
+                    <h2>
+                        No dishes available yet.
+                    </h2>
+
+
+                    <p>
+
+                        Our menu is currently empty.
+                        Check back soon for something delicious.
+
+                    </p>
+
+
+                    {% if user.is_authenticated and user.is_staff %}
+
+                        <a
+                            href="{% url 'addfood' %}"
+                            class="admin-add-btn"
+                        >
+
+                            <i class="bi bi-plus-lg"></i>
+
+                            Add Your First Food Item
+
+                        </a>
+
+                    {% else %}
+
+                        <a
+                            href="{% url 'home' %}"
+                            class="hero-secondary-btn"
+                        >
+
+                            <i class="bi bi-house"></i>
+
+                            Back to Home
+
+                        </a>
+
+                    {% endif %}
+
+
+                </div>
+
+
+            {% endif %}
+
+
+        </div>
+
+    </section>
+
+
 </div>
+
 {% endblock %}

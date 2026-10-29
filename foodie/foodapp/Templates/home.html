@@ -1,462 +1,1216 @@
+{% extends 'Base.html' %}
 
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Foodie - Home</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;700&display=swap" rel="stylesheet">
-  <style>
-    /* Reset */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body, html {
-      height: 100%;
-      font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #fafafa;
-      color: #333;
+{% block title %}Foodie | Delicious Food, Delivered{% endblock %}
+
+{% block content %}
+
+<style>
+
+    /* =========================================================
+       HOME PAGE
+    ========================================================== */
+
+    .home-page {
+        overflow: hidden;
     }
 
-    /* Navbar */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      background: linear-gradient(90deg, #56ccf2, #2f80ed);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 40px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-      z-index: 1000;
-      transition: background 0.3s ease;
-    }
-    nav .logo {
-      color: #fff;
-      font-size: 28px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      cursor: pointer;
-      user-select: none;
-    }
-    nav ul {
-      list-style: none;
-      display: flex;
-      gap: 25px;
-      align-items: center;
-    }
-    nav ul li a {
-      color: white;
-      text-decoration: none;
-      font-weight: 600;
-      padding: 8px 14px;
-      border-radius: 6px;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-    nav ul li a:hover {
-      background-color: #ff6347;
-      transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(255, 99, 71, 0.6);
-    }
-    /* Search form */
-    nav form {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    nav input[type="text"] {
-      padding: 8px 15px;
-      border-radius: 25px;
-      border: none;
-      outline: none;
-      width: 180px;
-      transition: width 0.4s ease, box-shadow 0.3s ease;
-      font-weight: 500;
-      font-size: 0.95rem;
-    }
-    nav input[type="text"]:focus {
-      width: 240px;
-      box-shadow: 0 0 8px rgba(255, 99, 71, 0.7);
-    }
-    nav button[type="submit"] {
-      background-color: #ff6347;
-      border: none;
-      color: white;
-      padding: 9px 18px;
-      border-radius: 25px;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 3px 10px rgba(255, 99, 71, 0.5);
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-    nav button[type="submit"]:hover {
-      background-color: #e5533d;
-      transform: scale(1.1);
+
+    /* =========================================================
+       HERO
+    ========================================================== */
+
+    .foodie-hero {
+        position: relative;
+        min-height: 650px;
+        display: flex;
+        align-items: center;
+        background:
+            radial-gradient(
+                circle at 85% 20%,
+                rgba(255, 90, 54, 0.10),
+                transparent 30%
+            ),
+            radial-gradient(
+                circle at 10% 90%,
+                rgba(255, 90, 54, 0.07),
+                transparent 28%
+            ),
+            #fff;
     }
 
-    /* Hero section */
-    .hero {
-      height: 100vh;
-      background: url("{% static 'images/home.png' %}") no-repeat center center/cover;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      text-align: center;
-      padding: 0 20px;
-      position: relative;
-      z-index: 1;
-      overflow: hidden;
-    }
-    .hero::before {
-      content: "";
-      position: absolute;
-      top:0; left:0; right:0; bottom:0;
-      background: rgba(0, 0, 0, 0.6);
-      z-index: -1;
-      backdrop-filter: brightness(0.6);
-    }
-    .hero h1 {
-      font-size: 4rem;
-      margin-bottom: 20px;
-      text-shadow: 3px 3px 15px rgba(0,0,0,0.7);
-      animation: fadeInDown 1.2s ease forwards;
-    }
-    .hero p {
-      font-size: 1.6rem;
-      max-width: 600px;
-      margin-bottom: 40px;
-      text-shadow: 2px 2px 10px rgba(0,0,0,0.6);
-      animation: fadeInUp 1.5s ease forwards;
-    }
-    .hero a.btn {
-      background-color: #ff6347;
-      color: white;
-      padding: 18px 45px;
-      text-decoration: none;
-      font-weight: 700;
-      border-radius: 35px;
-      box-shadow: 0 6px 20px rgba(255, 99, 71, 0.7);
-      transition: background-color 0.3s ease, transform 0.3s ease;
-      animation: pulseBtn 2.5s infinite;
-      display: inline-block;
-      user-select: none;
-    }
-    .hero a.btn:hover {
-      background-color: #e5533d;
-      transform: scale(1.1);
-      box-shadow: 0 8px 25px rgba(229, 83, 61, 0.8);
+    .hero-content {
+        position: relative;
+        z-index: 2;
     }
 
-    /* Animations */
-    @keyframes fadeInDown {
-      from {opacity: 0; transform: translateY(-30px);}
-      to {opacity: 1; transform: translateY(0);}
-    }
-    @keyframes fadeInUp {
-      from {opacity: 0; transform: translateY(30px);}
-      to {opacity: 1; transform: translateY(0);}
-    }
-    @keyframes pulseBtn {
-      0%, 100% { box-shadow: 0 6px 20px rgba(255, 99, 71, 0.7); }
-      50% { box-shadow: 0 8px 25px rgba(255, 99, 71, 1); }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 13px;
+        border-radius: 999px;
+        background: #fff1ed;
+        border: 1px solid #ffd8ce;
+        color: #e84826;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        margin-bottom: 22px;
     }
 
-    /* Carousel styles */
-    .carousel-container {
-      max-width: 900px;
-      margin: 80px auto 100px;
-      position: relative;
-      overflow: hidden;
-      border-radius: 18px;
-      box-shadow: 0 6px 25px rgba(0,0,0,0.15);
-      background: white;
-    }
-    .carousel-slide {
-      display: flex;
-      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .carousel-item {
-      min-width: 100%;
-      box-sizing: border-box;
-      padding: 25px 30px;
-      display: flex;
-      gap: 25px;
-      align-items: center;
-      transition: transform 0.4s ease;
-    }
-    .carousel-item:hover {
-      transform: scale(1.05);
-      box-shadow: 0 10px 30px rgba(255, 99, 71, 0.3);
-      border-radius: 18px;
-    }
-    .carousel-item img {
-      width: 320px;
-      border-radius: 18px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-      object-fit: cover;
-      transition: transform 0.3s ease;
-      cursor: pointer;
-    }
-    .carousel-info {
-      max-width: 520px;
-    }
-    .carousel-info h2 {
-      font-size: 2.4rem;
-      margin-bottom: 20px;
-      color: #222;
-      font-weight: 700;
-    }
-    .carousel-info p {
-      font-size: 1.2rem;
-      color: #555;
-      line-height: 1.5;
-      margin-bottom: 15px;
-      font-weight: 500;
-    }
-    .carousel-info .price {
-      font-weight: 700;
-      font-size: 1.5rem;
-      color: #ff6347;
-      letter-spacing: 1.5px;
-    }
-
-    /* Carousel nav buttons */
-    .carousel-btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background-color: rgba(255,255,255,0.9);
-      border: none;
-      border-radius: 50%;
-      width: 45px;
-      height: 45px;
-      cursor: pointer;
-      font-size: 28px;
-      font-weight: bold;
-      color: #ff6347;
-      user-select: none;
-      box-shadow: 0 4px 15px rgba(255, 99, 71, 0.4);
-      transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .carousel-btn:hover {
-      background-color: #ff6347;
-      color: white;
-      transform: scale(1.15);
-      box-shadow: 0 6px 20px rgba(255, 99, 71, 0.8);
-    }
-    .carousel-btn.prev {
-      left: 15px;
-    }
-    .carousel-btn.next {
-      right: 15px;
-    }
-
-    /* Responsive */
-    @media (max-width: 900px) {
-      nav {
-        padding: 15px 20px;
-      }
-      nav ul {
-        gap: 15px;
-      }
-      nav input[type="text"] {
-        width: 140px;
-      }
-      nav input[type="text"]:focus {
-        width: 180px;
-      }
-      nav button[type="submit"] {
-        padding: 7px 14px;
+    .hero-badge i {
         font-size: 0.9rem;
-      }
-      .hero h1 {
-        font-size: 3rem;
-      }
-      .hero p {
-        font-size: 1.2rem;
-        max-width: 90%;
-      }
-      .carousel-item {
-        flex-direction: column;
-        padding: 20px 15px;
-      }
-      .carousel-item img {
-        width: 90%;
-        max-width: 300px;
-        margin-bottom: 20px;
-      }
-      .carousel-info {
-        max-width: 100%;
+    }
+
+
+    .hero-title {
+        max-width: 650px;
+        margin: 0 0 22px;
+        color: #171717;
+        font-family: "Playfair Display", serif;
+        font-size: clamp(3rem, 6vw, 5.4rem);
+        line-height: 1.02;
+        font-weight: 800;
+        letter-spacing: -2.5px;
+    }
+
+    .hero-title span {
+        color: #ff5a36;
+    }
+
+
+    .hero-description {
+        max-width: 570px;
+        color: #737373;
+        font-size: 1.08rem;
+        line-height: 1.8;
+        margin-bottom: 30px;
+    }
+
+
+    .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+
+    .hero-primary-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 13px 22px;
+        border-radius: 11px;
+        background: #ff5a36;
+        border: 1px solid #ff5a36;
+        color: #fff;
+        font-size: 0.92rem;
+        font-weight: 700;
+        text-decoration: none;
+        box-shadow: 0 10px 25px rgba(255, 90, 54, 0.20);
+    }
+
+    .hero-primary-btn:hover {
+        background: #e84826;
+        border-color: #e84826;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 14px 30px rgba(255, 90, 54, 0.25);
+    }
+
+
+    .hero-secondary-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 13px 22px;
+        border-radius: 11px;
+        background: #fff;
+        border: 1px solid #dedede;
+        color: #252525;
+        font-size: 0.92rem;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .hero-secondary-btn:hover {
+        color: #ff5a36;
+        border-color: #ffb5a5;
+        background: #fffaf8;
+        transform: translateY(-2px);
+    }
+
+
+    /* =========================================================
+       HERO VISUAL
+    ========================================================== */
+
+    .hero-visual {
+        position: relative;
+        min-height: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+
+    .hero-main-card {
+        position: relative;
+        width: min(430px, 90%);
+        min-height: 430px;
+        border-radius: 34px;
+        background:
+            linear-gradient(
+                145deg,
+                #fff5f1,
+                #ffffff 65%
+            );
+        border: 1px solid #f0e1dc;
+        box-shadow:
+            0 30px 80px rgba(0, 0, 0, 0.10),
+            0 8px 25px rgba(255, 90, 54, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+
+    .hero-main-card::before {
+        content: "";
+        position: absolute;
+        width: 330px;
+        height: 330px;
+        border-radius: 50%;
+        background: #ffe0d7;
+        top: -100px;
+        right: -100px;
+    }
+
+
+    .hero-main-card::after {
+        content: "";
+        position: absolute;
+        width: 240px;
+        height: 240px;
+        border-radius: 50%;
+        background: #fff0eb;
+        bottom: -90px;
+        left: -80px;
+    }
+
+
+    .hero-food-circle {
+        position: relative;
+        z-index: 2;
+        width: 245px;
+        height: 245px;
+        border-radius: 50%;
+        background: #ff5a36;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow:
+            0 25px 45px rgba(255, 90, 54, 0.28);
+    }
+
+    .hero-food-circle i {
+        font-size: 7rem;
+    }
+
+
+    /* =========================================================
+       FLOATING CARDS
+    ========================================================== */
+
+    .hero-floating-card {
+        position: absolute;
+        z-index: 5;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 12px 15px;
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid #eeeeee;
+        border-radius: 14px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.11);
+    }
+
+
+    .hero-floating-card.top-card {
+        top: 45px;
+        right: -5px;
+    }
+
+
+    .hero-floating-card.bottom-card {
+        bottom: 45px;
+        left: -15px;
+    }
+
+
+    .floating-icon {
+        width: 39px;
+        height: 39px;
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff1ed;
+        color: #ff5a36;
+        font-size: 1.1rem;
+    }
+
+
+    .floating-icon.green {
+        background: #edf9f1;
+        color: #239447;
+    }
+
+
+    .floating-title {
+        display: block;
+        color: #222;
+        font-size: 0.78rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+
+    .floating-text {
+        display: block;
+        color: #888;
+        font-size: 0.7rem;
+        margin-top: 3px;
+    }
+
+
+    /* =========================================================
+       TRUST BAR
+    ========================================================== */
+
+    .trust-bar {
+        background: #171717;
+        color: #fff;
+        padding: 23px 0;
+    }
+
+
+    .trust-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        color: #d7d7d7;
+        font-size: 0.82rem;
+        font-weight: 600;
+    }
+
+
+    .trust-item i {
+        color: #ff7152;
+        font-size: 1.05rem;
+    }
+
+
+    /* =========================================================
+       FEATURES SECTION
+    ========================================================== */
+
+    .features-section {
+        padding: 100px 0;
+        background: #fafafa;
+    }
+
+
+    .section-eyebrow {
+        display: inline-block;
+        color: #ff5a36;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 10px;
+    }
+
+
+    .section-title {
+        color: #171717;
+        font-family: "Playfair Display", serif;
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 12px;
+    }
+
+
+    .section-description {
+        max-width: 560px;
+        margin: 0 auto;
+        color: #777;
+        font-size: 0.95rem;
+        line-height: 1.8;
+    }
+
+
+    .feature-card {
+        height: 100%;
+        padding: 30px;
+        background: #fff;
+        border: 1px solid #ececec;
+        border-radius: 18px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.045);
+        transition:
+            transform 0.25s ease,
+            box-shadow 0.25s ease,
+            border-color 0.25s ease;
+    }
+
+
+    .feature-card:hover {
+        transform: translateY(-7px);
+        border-color: #f1d2ca;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+    }
+
+
+    .feature-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 22px;
+        background: #fff1ed;
+        color: #ff5a36;
+        font-size: 1.4rem;
+    }
+
+
+    .feature-icon.green {
+        background: #edf9f1;
+        color: #239447;
+    }
+
+
+    .feature-icon.dark {
+        background: #f1f1f1;
+        color: #333;
+    }
+
+
+    .feature-card h3 {
+        color: #222;
+        font-size: 1.05rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+
+
+    .feature-card p {
+        color: #777;
+        font-size: 0.88rem;
+        line-height: 1.75;
+        margin: 0;
+    }
+
+
+    /* =========================================================
+       HOW IT WORKS
+    ========================================================== */
+
+    .steps-section {
+        padding: 100px 0;
+        background: #fff;
+    }
+
+
+    .step-card {
+        position: relative;
+        padding: 10px 25px;
         text-align: center;
-      }
-      .carousel-info h2 {
-        font-size: 1.8rem;
-      }
-      .carousel-info p {
+    }
+
+
+    .step-number {
+        width: 52px;
+        height: 52px;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+        background: #ff5a36;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        font-weight: 800;
+        box-shadow: 0 8px 20px rgba(255, 90, 54, 0.20);
+    }
+
+
+    .step-card h3 {
+        color: #222;
         font-size: 1rem;
-      }
-      .carousel-info .price {
-        font-size: 1.3rem;
-      }
+        font-weight: 800;
+        margin-bottom: 8px;
     }
 
-    /* Footer */
-    footer {
-      background: #2f80ed;
-      color: white;
-      text-align: center;
-      padding: 20px 10px;
-      font-weight: 500;
-      letter-spacing: 0.5px;
-      user-select: none;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-    }
-  </style>
-</head>
-<body>
 
-  <nav>
-    <div class="logo">Foodie</div>
-  
-    <form method="GET" action="{% url 'fooditem_search' %}">
-      <input type="text" name="q" placeholder="Search food items..." value="{{ request.GET.q }}">
-      <button type="submit" aria-label="Search food items">🔍</button>
-    </form>
-  
-    <ul class="nav-links d-flex align-items-center">
-      {% if request.session.cust_emailId %}
-        <li class="nav-item me-3">
-          <span class="nav-link text-white fw-semibold" style="pointer-events: none;">
-            Welcome, {{ request.session.customer_name }}
-          </span>
-        </li>
-        <li class="nav-item">
-          <form method="post" action="{% url 'logout' %}" class="d-inline m-0 p-0">
-            {% csrf_token %}
-            <button type="submit"
-                    class="btn btn-outline-light btn-sm fw-semibold"
-                    style="padding: 6px 16px; border-radius: 20px; font-weight: 600; cursor: pointer;">
-              Logout
-            </button>
-          </form>
-        </li>
-        <li class="nav-item">
-          <a href="{% url 'view_cart' %}" class="nav-link text-white fw-semibold" style="font-size:1.1rem;">🛒 View Cart</a>
-        </li>
-      {% else %}
-        <li><a href="{% url 'login' %}">Login</a></li>
-        <li><a href="{% url 'register' %}">Register</a></li>  
-      {% endif %}
-    </ul>
-  </nav>
-  
-  <section class="hero">
-    <h1>Delicious Food Delivered To You</h1>
-    <p>Discover your next favorite meal from our delicious menu!</p>
-    <a href="{% url 'menu' %}" class="btn" role="button" aria-label="Explore Menu">Explore Menu</a>
-  </section>
-
-  <section class="carousel-container" aria-label="Featured Food Items">
-    <button class="carousel-btn prev" aria-label="Previous slide">&#10094;</button>
-    <div class="carousel-slide">
-      {% if featured_items %}
-        {% for item in featured_items %}
-        <article class="carousel-item" tabindex="0">
-          {% if item.image %}
-            <img src="{{ item.image.url }}" alt="{{ item.name }}">
-          {% else %}
-            <img src="{% static 'images/default-food.jpg' %}" alt="No image available">
-          {% endif %}
-          <div class="carousel-info">
-            <h2>{{ item.name }}</h2>
-            <p>{{ item.description|truncatewords:25 }}</p>
-            <div class="price">₹{{ item.price }}</div>
-          </div>
-        </article>
-        {% endfor %}
-      {% else %}
-        <article class="carousel-item" tabindex="0">
-          <img src="{% static 'images/pizza.png' %}" alt="Pizza">
-          <div class="carousel-info">
-            <h2>Cheesy Margherita Pizza</h2>
-            <p>Enjoy our best-selling cheesy margherita pizza with hand-tossed crust and fresh toppings.</p>
-            <div class="price">₹399</div>
-          </div>
-        </article>
-        <article class="carousel-item" tabindex="0">
-          <img src="{% static 'images/home.png' %}" alt="Pancake">
-          <div class="carousel-info">
-            <h2>Pancake</h2>
-            <p>Best selling pancakes</p>
-            <div class="price">₹199</div>
-          </div>
-        </article>
-        <article class="carousel-item" tabindex="0">
-          <img src="{% static 'images/burger.png' %}" alt="Burger">
-          <div class="carousel-info">
-            <h2>Classic Chicken Burger</h2>
-            <p>Juicy grilled chicken patty stacked with crisp lettuce and sauces in a soft toasted bun.</p>
-            <div class="price">₹199</div>
-          </div>
-        </article>
-        <article class="carousel-item" tabindex="0">
-          <img src="{% static 'images/pasta.png' %}" alt="Pasta">
-          <div class="carousel-info">
-            <h2>Creamy Alfredo Pasta</h2>
-            <p>Rich and creamy white sauce pasta loaded with cheese and herbs.</p>
-            <div class="price">₹249</div>
-          </div>
-        </article>
-      {% endif %}
-    </div>
-    <button class="carousel-btn next" aria-label="Next slide">&#10095;</button>
-  </section>
-
-  <footer>
-    &copy; {{ current_year }} Foodie. All rights reserved.
-  </footer>
-  
-  <script>
-    const slide = document.querySelector('.carousel-slide');
-    const items = document.querySelectorAll('.carousel-item');
-    const prevBtn = document.querySelector('.carousel-btn.prev');
-    const nextBtn = document.querySelector('.carousel-btn.next');
-
-    let currentIndex = 0;
-
-    function updateSlidePosition() {
-      slide.style.transform = 'translateX(' + (-currentIndex * 100) + '%)';
+    .step-card p {
+        color: #777;
+        font-size: 0.84rem;
+        line-height: 1.7;
+        margin: 0;
     }
 
-    prevBtn.addEventListener('click', () => {
-      currentIndex = (currentIndex === 0) ? items.length -1 : currentIndex - 1;
-      updateSlidePosition();
-    });
 
-    nextBtn.addEventListener('click', () => {
-      currentIndex = (currentIndex === items.length -1) ? 0 : currentIndex + 1;
-      updateSlidePosition();
-    });
+    /* =========================================================
+       CTA
+    ========================================================== */
 
-    // Auto slide every 5 seconds
-    setInterval(() => {
-      nextBtn.click();
-    }, 5000);
-  </script>
-
-</body>
-</html>
- 
+    .cta-section {
+        padding: 30px 0 100px;
+        background: #fff;
+    }
 
 
- 
+    .cta-card {
+        position: relative;
+        overflow: hidden;
+        padding: 65px 35px;
+        border-radius: 26px;
+        background:
+            radial-gradient(
+                circle at 85% 15%,
+                rgba(255, 255, 255, 0.14),
+                transparent 30%
+            ),
+            linear-gradient(
+                135deg,
+                #191919,
+                #282828
+            );
+        text-align: center;
+        color: #fff;
+    }
 
- 
+
+    .cta-card::before {
+        content: "";
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: rgba(255, 90, 54, 0.15);
+        left: -100px;
+        bottom: -100px;
+    }
+
+
+    .cta-content {
+        position: relative;
+        z-index: 2;
+    }
+
+
+    .cta-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 20px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 90, 54, 0.16);
+        color: #ff7255;
+        font-size: 1.65rem;
+    }
+
+
+    .cta-card h2 {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 800;
+        margin-bottom: 12px;
+    }
+
+
+    .cta-card p {
+        max-width: 550px;
+        margin: 0 auto 28px;
+        color: #aaa;
+        font-size: 0.94rem;
+    }
+
+
+    .cta-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 12px 22px;
+        border-radius: 10px;
+        background: #fff;
+        color: #222;
+        font-size: 0.9rem;
+        font-weight: 800;
+        text-decoration: none;
+    }
+
+
+    .cta-button:hover {
+        background: #ff5a36;
+        color: #fff;
+        transform: translateY(-2px);
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================== */
+
+    @media (max-width: 991.98px) {
+
+        .foodie-hero {
+            min-height: auto;
+            padding: 80px 0;
+        }
+
+        .hero-content {
+            text-align: center;
+        }
+
+        .hero-description {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-actions {
+            justify-content: center;
+        }
+
+        .hero-visual {
+            min-height: 430px;
+            margin-top: 30px;
+        }
+
+        .hero-floating-card.top-card {
+            right: 3%;
+        }
+
+        .hero-floating-card.bottom-card {
+            left: 3%;
+        }
+
+    }
+
+
+    @media (max-width: 575.98px) {
+
+        .foodie-hero {
+            padding: 60px 0;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            letter-spacing: -1.5px;
+        }
+
+        .hero-description {
+            font-size: 0.95rem;
+        }
+
+        .hero-actions {
+            flex-direction: column;
+        }
+
+        .hero-primary-btn,
+        .hero-secondary-btn {
+            width: 100%;
+        }
+
+        .hero-visual {
+            min-height: 370px;
+        }
+
+        .hero-main-card {
+            min-height: 350px;
+        }
+
+        .hero-food-circle {
+            width: 190px;
+            height: 190px;
+        }
+
+        .hero-food-circle i {
+            font-size: 5rem;
+        }
+
+        .hero-floating-card {
+            transform: scale(0.88);
+        }
+
+        .hero-floating-card.top-card {
+            top: 15px;
+            right: -5px;
+        }
+
+        .hero-floating-card.bottom-card {
+            bottom: 15px;
+            left: -5px;
+        }
+
+        .features-section,
+        .steps-section {
+            padding: 70px 0;
+        }
+
+        .cta-section {
+            padding-bottom: 70px;
+        }
+
+        .cta-card {
+            padding: 50px 22px;
+        }
+
+    }
+
+</style>
+
+
+<div class="home-page">
+
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <section class="foodie-hero">
+
+        <div class="container">
+
+            <div class="row align-items-center g-5">
+
+
+                <!-- HERO CONTENT -->
+
+                <div class="col-lg-6">
+
+                    <div class="hero-content">
+
+
+                        <span class="hero-badge">
+
+                            <i class="bi bi-stars"></i>
+
+                            Fresh food. Simple ordering.
+
+                        </span>
+
+
+                        <h1 class="hero-title">
+
+                            Good food
+                            <br>
+
+                            <span>starts here.</span>
+
+                        </h1>
+
+
+                        <p class="hero-description">
+
+                            Discover delicious dishes, build your perfect
+                            order, and enjoy a simple food ordering experience
+                            designed around you.
+
+                        </p>
+
+
+                        <div class="hero-actions">
+
+
+                            <a
+                                href="{% url 'menu' %}"
+                                class="hero-primary-btn"
+                            >
+
+                                <i class="bi bi-grid"></i>
+
+                                Explore Menu
+
+                                <i class="bi bi-arrow-right"></i>
+
+                            </a>
+
+
+                            {% if not user.is_authenticated %}
+
+                                <a
+                                    href="{% url 'register' %}"
+                                    class="hero-secondary-btn"
+                                >
+
+                                    <i class="bi bi-person-plus"></i>
+
+                                    Create Account
+
+                                </a>
+
+                            {% endif %}
+
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- HERO VISUAL -->
+
+                <div class="col-lg-6">
+
+                    <div class="hero-visual">
+
+
+                        <div class="hero-main-card">
+
+
+                            <div class="hero-food-circle">
+
+                                <i class="bi bi-egg-fried"></i>
+
+                            </div>
+
+
+                            <!-- FLOATING CARD -->
+
+                            <div class="hero-floating-card top-card">
+
+                                <div class="floating-icon">
+
+                                    <i class="bi bi-heart-fill"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <span class="floating-title">
+                                        Made for food lovers
+                                    </span>
+
+                                    <span class="floating-text">
+                                        Discover your favorites
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- FLOATING CARD -->
+
+                            <div class="hero-floating-card bottom-card">
+
+                                <div class="floating-icon green">
+
+                                    <i class="bi bi-check-circle-fill"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <span class="floating-title">
+                                        Easy checkout
+                                    </span>
+
+                                    <span class="floating-text">
+                                        Simple & secure ordering
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         TRUST BAR
+    ====================================================== -->
+
+    <section class="trust-bar">
+
+        <div class="container">
+
+            <div class="row g-4">
+
+                <div class="col-6 col-lg-3">
+
+                    <div class="trust-item">
+
+                        <i class="bi bi-stars"></i>
+
+                        Fresh & Delicious
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-6 col-lg-3">
+
+                    <div class="trust-item">
+
+                        <i class="bi bi-bag-check"></i>
+
+                        Easy Ordering
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-6 col-lg-3">
+
+                    <div class="trust-item">
+
+                        <i class="bi bi-shield-check"></i>
+
+                        Secure Checkout
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-6 col-lg-3">
+
+                    <div class="trust-item">
+
+                        <i class="bi bi-clock"></i>
+
+                        Simple Experience
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FEATURES
+    ====================================================== -->
+
+    <section class="features-section">
+
+        <div class="container">
+
+
+            <div class="text-center mb-5">
+
+                <span class="section-eyebrow">
+                    The Foodie Experience
+                </span>
+
+                <h2 class="section-title">
+                    Everything you need,
+                    <br>
+                    in one place.
+                </h2>
+
+                <p class="section-description">
+
+                    From discovering your next favorite dish to
+                    completing your order, Foodie keeps the experience
+                    simple and convenient.
+
+                </p>
+
+            </div>
+
+
+            <div class="row g-4">
+
+
+                <!-- FEATURE 1 -->
+
+                <div class="col-md-4">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon">
+
+                            <i class="bi bi-grid"></i>
+
+                        </div>
+
+                        <h3>
+                            Explore the Menu
+                        </h3>
+
+                        <p>
+
+                            Browse available dishes and discover
+                            something delicious for your next meal.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- FEATURE 2 -->
+
+                <div class="col-md-4">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon green">
+
+                            <i class="bi bi-cart-check"></i>
+
+                        </div>
+
+                        <h3>
+                            Easy Ordering
+                        </h3>
+
+                        <p>
+
+                            Add your favorite dishes to your cart
+                            and place your order in just a few steps.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- FEATURE 3 -->
+
+                <div class="col-md-4">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon dark">
+
+                            <i class="bi bi-shield-check"></i>
+
+                        </div>
+
+                        <h3>
+                            Secure Checkout
+                        </h3>
+
+                        <p>
+
+                            Complete your order through the
+                            integrated payment experience.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         HOW IT WORKS
+    ====================================================== -->
+
+    <section class="steps-section">
+
+        <div class="container">
+
+
+            <div class="text-center mb-5">
+
+                <span class="section-eyebrow">
+                    Simple Process
+                </span>
+
+                <h2 class="section-title">
+                    Order in three simple steps.
+                </h2>
+
+            </div>
+
+
+            <div class="row g-5">
+
+
+                <!-- STEP 1 -->
+
+                <div class="col-md-4">
+
+                    <div class="step-card">
+
+                        <div class="step-number">
+                            01
+                        </div>
+
+                        <h3>
+                            Choose your food
+                        </h3>
+
+                        <p>
+
+                            Explore the menu and find the dishes
+                            you are craving.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STEP 2 -->
+
+                <div class="col-md-4">
+
+                    <div class="step-card">
+
+                        <div class="step-number">
+                            02
+                        </div>
+
+                        <h3>
+                            Add to your cart
+                        </h3>
+
+                        <p>
+
+                            Select your favorites and review
+                            your order before checkout.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STEP 3 -->
+
+                <div class="col-md-4">
+
+                    <div class="step-card">
+
+                        <div class="step-number">
+                            03
+                        </div>
+
+                        <h3>
+                            Place your order
+                        </h3>
+
+                        <p>
+
+                            Complete checkout and enjoy a
+                            simple ordering experience.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CTA
+    ====================================================== -->
+
+    <section class="cta-section">
+
+        <div class="container">
+
+            <div class="cta-card">
+
+                <div class="cta-content">
+
+
+                    <div class="cta-icon">
+
+                        <i class="bi bi-basket2-fill"></i>
+
+                    </div>
+
+
+                    <h2>
+                        Ready for something delicious?
+                    </h2>
+
+
+                    <p>
+
+                        Explore the Foodie menu and discover
+                        your next favorite meal.
+
+                    </p>
+
+
+                    <a
+                        href="{% url 'menu' %}"
+                        class="cta-button"
+                    >
+
+                        View Menu
+
+                        <i class="bi bi-arrow-right"></i>
+
+                    </a>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+</div>
+
+{% endblock %}

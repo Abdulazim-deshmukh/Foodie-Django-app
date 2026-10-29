@@ -1,14 +1,178 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends 'Base.html' %}
+
+{% block title %}Logged Out | Foodie{% endblock %}
+
+{% block extra_css %}
+<style>
+    .logout-page {
+        min-height: calc(100vh - 180px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px 80px;
+        background:
+            radial-gradient(circle at 10% 10%, rgba(255, 239, 224, 0.9), transparent 30%),
+            #faf9f7;
+    }
+
+    .logout-card {
+        width: 100%;
+        max-width: 560px;
+        padding: 45px 35px;
+        background: #ffffff;
+        border: 1px solid #ebe4de;
+        border-radius: 22px;
+        box-shadow: 0 14px 40px rgba(35, 24, 17, 0.08);
+        text-align: center;
+    }
+
+    .logout-icon {
+        width: 76px;
+        height: 76px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 22px;
+        border-radius: 50%;
+        background: #fff1e6;
+        color: #ed6500;
+        border: 7px solid #fff8f2;
+        font-size: 1.8rem;
+    }
+
+    .logout-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        margin-bottom: 14px;
+        border-radius: 50px;
+        background: #f6f2ee;
+        color: #82776f;
+        font-size: 0.64rem;
+        font-weight: 800;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+    }
+
+    .logout-card h1 {
+        margin: 0 0 10px;
+        color: #211b18;
+        font-family: "Playfair Display", serif;
+        font-size: clamp(2.1rem, 5vw, 2.7rem);
+        font-weight: 700;
+    }
+
+    .logout-message {
+        max-width: 430px;
+        margin: 0 auto 28px;
+        color: #81766e;
+        font-size: 0.84rem;
+        line-height: 1.7;
+    }
+
+    .return-home-btn {
+        min-height: 48px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 0 22px;
+        border-radius: 10px;
+        background: #ff6f00;
+        color: #ffffff;
+        border: 1px solid #ff6f00;
+        font-family: inherit;
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .return-home-btn:hover {
+        background: #e86100;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 10px 24px rgba(255, 111, 0, 0.2);
+    }
+
+    .logout-note {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        margin-top: 20px;
+        color: #a09891;
+        font-size: 0.66rem;
+    }
+
+    .logout-note i {
+        color: #6c9a70;
+    }
+
+    @media (max-width: 600px) {
+        .logout-page {
+            padding: 45px 14px 60px;
+        }
+
+        .logout-card {
+            padding: 35px 22px;
+        }
+
+        .logout-card h1 {
+            font-size: 2.15rem;
+        }
+
+        .return-home-btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
 
 {% block content %}
-<div class="container mt-5 d-flex justify-content-center">
-    <div class="card text-center" style="width: 30rem;">
-        <div class="card-body">
-            <h3 class="card-title mb-4">Logged Out Successfully</h3>
-            <p class="card-text">You have been logged out. Thank you for visiting!</p>
-            <a href="{% url 'home' %}" class="btn btn-primary mt-3">Return to Home</a>
+
+<section class="logout-page">
+
+    <div class="logout-card">
+
+        <div class="logout-icon">
+            <i class="bi bi-box-arrow-right"></i>
         </div>
+
+
+        <div class="logout-badge">
+            <i class="bi bi-check-circle"></i>
+            Session Ended
+        </div>
+
+
+        <h1>You've been logged out.</h1>
+
+
+        <p class="logout-message">
+            You have successfully signed out of your Foodie account.
+            Thank you for visiting, and we hope to see you again soon.
+        </p>
+
+
+        <a
+            href="{% url 'home' %}"
+            class="return-home-btn"
+        >
+            <i class="bi bi-house"></i>
+            Return to Home
+        </a>
+
+
+        <div class="logout-note">
+            <i class="bi bi-shield-check"></i>
+            Your account session has been securely closed.
+        </div>
+
     </div>
-</div>
+
+</section>
+
 {% endblock %}

@@ -1,32 +1,501 @@
-{% extends 'base.html' %}
+{% extends 'Base.html' %}
+
+{% block title %}Order Confirmation | Foodie{% endblock %}
+
+{% block extra_css %}
+<style>
+    .confirmation-page {
+        min-height: calc(100vh - 180px);
+        padding: 55px 20px 80px;
+        background:
+            radial-gradient(circle at 8% 8%, rgba(255, 239, 224, 0.85), transparent 30%),
+            #faf9f7;
+    }
+
+    .confirmation-wrapper {
+        max-width: 720px;
+        margin: 0 auto;
+    }
+
+    .confirmation-card {
+        overflow: hidden;
+        background: #ffffff;
+        border: 1px solid #ebe4de;
+        border-radius: 22px;
+        box-shadow: 0 14px 40px rgba(35, 24, 17, 0.08);
+    }
+
+    /* ---------------------------------------------------------
+       HEADER
+    --------------------------------------------------------- */
+
+    .confirmation-header {
+        padding: 38px 30px 30px;
+        text-align: center;
+        border-bottom: 1px solid #eee8e2;
+    }
+
+    .confirmation-icon {
+        width: 70px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+        background: #edf8ef;
+        color: #4d8a55;
+        border: 7px solid #f6fbf7;
+        font-size: 1.7rem;
+    }
+
+    .confirmation-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        margin-bottom: 13px;
+        border-radius: 50px;
+        background: #fff1e6;
+        color: #ed6500;
+        font-size: 0.64rem;
+        font-weight: 800;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+    }
+
+    .confirmation-header h1 {
+        margin: 0 0 9px;
+        color: #211b18;
+        font-family: "Playfair Display", serif;
+        font-size: clamp(2rem, 5vw, 2.7rem);
+    }
+
+    .confirmation-header p {
+        max-width: 500px;
+        margin: 0 auto;
+        color: #81766e;
+        font-size: 0.8rem;
+        line-height: 1.7;
+    }
+
+    /* ---------------------------------------------------------
+       BODY
+    --------------------------------------------------------- */
+
+    .confirmation-body {
+        padding: 28px;
+    }
+
+    .greeting {
+        margin: 0 0 22px;
+        color: #514740;
+        font-size: 0.82rem;
+        line-height: 1.7;
+    }
+
+    .greeting strong {
+        color: #302823;
+    }
+
+    /* ---------------------------------------------------------
+       SECTION
+    --------------------------------------------------------- */
+
+    .confirmation-section {
+        margin-bottom: 22px;
+        padding: 20px;
+        background: #faf8f6;
+        border: 1px solid #eee8e2;
+        border-radius: 14px;
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 15px;
+        color: #332b26;
+        font-size: 0.85rem;
+        font-weight: 800;
+    }
+
+    .section-title i {
+        color: #ed6500;
+    }
+
+    /* ---------------------------------------------------------
+       ORDER DETAILS
+    --------------------------------------------------------- */
+
+    .detail-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 9px 0;
+        border-bottom: 1px solid #eee8e2;
+        font-size: 0.72rem;
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .detail-label {
+        color: #928880;
+        flex: 0 0 38%;
+    }
+
+    .detail-value {
+        color: #403730;
+        font-weight: 700;
+        text-align: right;
+        line-height: 1.5;
+        word-break: break-word;
+    }
+
+    .total-value {
+        color: #e85f00;
+        font-size: 1rem;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 9px;
+        border-radius: 50px;
+        background: #edf8ef;
+        color: #4d8a55;
+        font-size: 0.6rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    /* ---------------------------------------------------------
+       ITEMS
+    --------------------------------------------------------- */
+
+    .ordered-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 11px 0;
+        border-bottom: 1px solid #eee8e2;
+    }
+
+    .ordered-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .item-name {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #403730;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .item-name i {
+        color: #ed6500;
+        font-size: 0.65rem;
+    }
+
+    .item-quantity {
+        padding: 4px 8px;
+        border-radius: 50px;
+        background: #fff1e6;
+        color: #ed6500;
+        font-size: 0.62rem;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    /* ---------------------------------------------------------
+       FOOTER NOTE
+    --------------------------------------------------------- */
+
+    .confirmation-footer {
+        padding-top: 5px;
+        color: #81766e;
+        font-size: 0.75rem;
+        line-height: 1.7;
+    }
+
+    .confirmation-footer strong {
+        color: #403730;
+    }
+
+    .email-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        margin-top: 20px;
+        padding: 14px 16px;
+        background: #fff7f0;
+        border: 1px solid #ffe0c6;
+        border-radius: 10px;
+        color: #8d7b6e;
+        font-size: 0.67rem;
+        line-height: 1.6;
+    }
+
+    .email-note i {
+        flex: 0 0 auto;
+        margin-top: 2px;
+        color: #ed6500;
+    }
+
+    /* ---------------------------------------------------------
+       MOBILE
+    --------------------------------------------------------- */
+
+    @media (max-width: 600px) {
+
+        .confirmation-page {
+            padding: 40px 14px 60px;
+        }
+
+        .confirmation-header {
+            padding: 32px 20px 25px;
+        }
+
+        .confirmation-body {
+            padding: 21px;
+        }
+
+        .confirmation-section {
+            padding: 17px;
+        }
+
+        .detail-row {
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            flex-basis: auto;
+        }
+
+        .detail-value {
+            text-align: left;
+        }
+
+        .ordered-item {
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
 
 {% block content %}
-<!DOCTYPE html>
-<html>
-  <body style="font-family: Arial, sans-serif; background-color: #f6f6f6; padding: 20px;">
-    <div style="max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-      <h2 style="color: #28a745;">Order Confirmation</h2>
-      <p>Thank you, <strong>{{ customer.name }}</strong> — your order has been placed successfully!</p>
 
-      <h4>Order Details:</h4>
-      <ul style="padding-left: 0; list-style: none;">
-        <li><strong>Order Number:</strong> {{ order.orderNo }}</li>
-        <li><strong>Status:</strong> {{ order.status }}</li>
-        <li><strong>Total Bill:</strong> ₹{{ order.totalbill }}</li>
-        <li><strong>Shipping Address:</strong> {{ order.address }}, {{ order.city }}, {{ order.pincode }}</li>
-        <li><strong>Phone Number:</strong> {{ order.phoneno }}</li>
-        <li><strong>Order Date:</strong> {{ order.created_at|date:"d M Y H:i" }}</li>
-      </ul>
+<section class="confirmation-page">
 
-      <h4>Items Ordered:</h4>
-      <ul>
-        {% for item in order_items %}
-          <li>{{ item.food_item.name }} × {{ item.quantity }}</li>
-        {% endfor %}
-      </ul>
+    <div class="confirmation-wrapper">
 
-      <p style="margin-top: 30px;">We'll notify you once your order is on the way!</p>
+        <div class="confirmation-card">
+
+            <!-- Header -->
+            <div class="confirmation-header">
+
+                <div class="confirmation-icon">
+                    <i class="bi bi-envelope-check"></i>
+                </div>
+
+                <div class="confirmation-badge">
+                    <i class="bi bi-check-circle"></i>
+                    Order Confirmed
+                </div>
+
+                <h1>Thank you for your order.</h1>
+
+                <p>
+                    Your Foodie order has been placed successfully.
+                    Here are your complete order details.
+                </p>
+
+            </div>
+
+
+            <!-- Body -->
+            <div class="confirmation-body">
+
+                <!-- Greeting -->
+                <p class="greeting">
+                    Thank you,
+                    <strong>{{ customer.name }}</strong>.
+                    Your order has been placed successfully and is
+                    now being prepared for processing.
+                </p>
+
+
+                <!-- Order Details -->
+                <div class="confirmation-section">
+
+                    <h2 class="section-title">
+                        <i class="bi bi-receipt"></i>
+                        Order Details
+                    </h2>
+
+
+                    <div class="detail-row">
+
+                        <span class="detail-label">
+                            Order Number
+                        </span>
+
+                        <span class="detail-value">
+                            #{{ order.orderNo }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="detail-row">
+
+                        <span class="detail-label">
+                            Order Status
+                        </span>
+
+                        <span class="detail-value">
+
+                            <span class="status-badge">
+                                <i class="bi bi-check-circle-fill"></i>
+                                {{ order.status }}
+                            </span>
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="detail-row">
+
+                        <span class="detail-label">
+                            Total Bill
+                        </span>
+
+                        <span class="detail-value total-value">
+                            ₹{{ order.totalbill }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="detail-row">
+
+                        <span class="detail-label">
+                            Shipping Address
+                        </span>
+
+                        <span class="detail-value">
+                            {{ order.address }},
+                            {{ order.city }},
+                            {{ order.pincode }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="detail-row">
+
+                        <span class="detail-label">
+                            Phone Number
+                        </span>
+
+                        <span class="detail-value">
+                            {{ order.phoneno }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="detail-row">
+
+                        <span class="detail-label">
+                            Order Date
+                        </span>
+
+                        <span class="detail-value">
+                            {{ order.created_at|date:"d M Y H:i" }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Items Ordered -->
+                <div class="confirmation-section">
+
+                    <h2 class="section-title">
+                        <i class="bi bi-bag-check"></i>
+                        Items Ordered
+                    </h2>
+
+
+                    {% for item in order_items %}
+
+                        <div class="ordered-item">
+
+                            <div class="item-name">
+
+                                <i class="bi bi-dot"></i>
+
+                                {{ item.food_item.name }}
+
+                            </div>
+
+                            <div class="item-quantity">
+                                × {{ item.quantity }}
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- Footer Message -->
+                <div class="confirmation-footer">
+
+                    We'll notify you once your order is on the way.
+
+                    <br>
+
+                    Thank you for choosing
+                    <strong>Foodie</strong>!
+
+                </div>
+
+
+                <!-- Email Note -->
+                <div class="email-note">
+
+                    <i class="bi bi-info-circle"></i>
+
+                    <span>
+                        Keep this information for your records.
+                        You can also view your order history from
+                        your Foodie account.
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
-  </body>
-</html>
+
+</section>
+
 {% endblock %}

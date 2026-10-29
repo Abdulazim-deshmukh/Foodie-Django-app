@@ -1,81 +1,668 @@
-<!-- templates/checkout_success.html -->
-{% extends 'base.html' %}
 
-{% block content %}
-<div class="container py-5">
-    <h2 class="mb-4 text-center">Checkout</h2>
+{% extends "Base.html" %}
 
-    {% if cart_items %}
-    <div class="row">
-        <!-- Cart Summary -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-header bg-dark text-white">
-                    <h5 class="mb-0">Cart Summary</h5>
-                </div>
-                <div class="card-body p-0">
-                    <table class="table table-hover m-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Food Item</th>
-                                <th>Qty</th>
-                                <th>Price</th>
-                                <th>Subtotal</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in cart_items %}
-                            <tr>
-                                <td>{{ item.food_item.name }}</td>
-                                <td>{{ item.quantity }}</td>
-                                <td>₹{{ item.food_item.price }}</td>
-                                <td>₹{{ item.total_price }}</td>
-                            </tr>
-                            {% endfor %}
-                            <tr class="fw-bold table-secondary">
-                                <td colspan="3" class="text-end">Total</td>
-                                <td>₹{{ total_amount }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+{% block title %}Checkout | Foodie{% endblock %}
 
-        <!-- Order Form -->
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-dark text-white">
-                    <h5 class="mb-0">Shipping Details</h5>
-                </div>
-                <div class="card-body">
-                    <form method="post" action="{% url 'place_order' %}">
-                        {% csrf_token %}
-                        {% for field in form %}
-                        <div class="mb-3">
-                            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                            {{ field }}
-                            {% if field.errors %}
-                            <div class="text-danger small">
-                                {{ field.errors|join:", " }}
-                            </div>
-                            {% endif %}
-                        </div>
-                        {% endfor %}
-                         <button type="submit" class="btn btn-success w-100 mt-3">Place Order</button> 
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+{% block extra_css %}
+<style>
+    .checkout-page {
+        min-height: calc(100vh - 180px);
+        padding: 55px 20px 80px;
+        background:
+            radial-gradient(circle at 5% 5%, rgba(255, 244, 233, 0.9), transparent 30%),
+            #faf9f7;
+    }
 
+    .checkout-container {
+        max-width: 1180px;
+        margin: 0 auto;
+    }
 
-    {% else %}
-    <div class="alert alert-info text-center">
-        <p>Your cart is empty.</p>
-        <a href="{% url 'menu' %}" class="btn btn-primary mt-2">Back to Menu</a>
-    </div>
-    {% endif %}
-</div>
+    /* HEADER */
+
+    .checkout-header {
+        margin-bottom: 34px;
+    }
+
+    .checkout-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 14px;
+        margin-bottom: 15px;
+        border-radius: 50px;
+        background: #fff1e6;
+        color: #ed6500;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .checkout-header h1 {
+        margin: 0 0 10px;
+        color: #211b18;
+        font-family: "Playfair Display", serif;
+        font-size: clamp(2.3rem, 4vw, 3.2rem);
+        line-height: 1.1;
+    }
+
+    .checkout-header p {
+        margin: 0;
+        color: #81766e;
+        font-size: 0.92rem;
+        line-height: 1.7;
+    }
+
+    /* LAYOUT */
+
+    .checkout-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 370px;
+        gap: 28px;
+        align-items: start;
+    }
+
+    /* FORM CARD */
+
+    .checkout-card {
+        background: #ffffff;
+        border: 1px solid #ece5df;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 32px rgba(35, 24, 17, 0.06);
+    }
+
+    .checkout-card-header {
+        padding: 24px 28px;
+        border-bottom: 1px solid #eee8e2;
+    }
+
+    .checkout-card-header h2 {
+        margin: 0 0 5px;
+        color: #29221e;
+        font-size: 1.05rem;
+        font-weight: 800;
+    }
+
+    .checkout-card-header p {
+        margin: 0;
+        color: #948a82;
+        font-size: 0.76rem;
+    }
+
+    .checkout-form {
+        padding: 28px;
+    }
+
+    .form-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 18px;
+        color: #332a25;
+        font-size: 0.88rem;
+        font-weight: 800;
+    }
+
+    .form-section-title span {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: #fff1e6;
+        color: #ed6500;
+        font-size: 0.72rem;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 19px 18px;
+    }
+
+    .form-group {
+        min-width: 0;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 7px;
+        color: #514740;
+        font-size: 0.76rem;
+        font-weight: 800;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 13px;
+        border: 1px solid #e2dbd5;
+        border-radius: 9px;
+        outline: none;
+        background: #fff;
+        color: #302923;
+        font-family: inherit;
+        font-size: 0.82rem;
+        transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .form-group textarea {
+        min-height: 105px;
+        resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        border-color: #ff8a38;
+        box-shadow: 0 0 0 3px rgba(255, 111, 0, 0.09);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+        color: #b2a8a1;
+    }
+
+    .field-errors {
+        margin-top: 6px;
+        color: #c9473c;
+        font-size: 0.7rem;
+        line-height: 1.5;
+    }
+
+    .field-help {
+        margin-top: 6px;
+        color: #a19891;
+        font-size: 0.68rem;
+    }
+
+    .checkout-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 24px;
+        border-top: 1px solid #eee8e2;
+    }
+
+    .back-cart {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: #81766e;
+        text-decoration: none;
+        font-size: 0.76rem;
+        font-weight: 700;
+    }
+
+    .back-cart:hover {
+        color: #ed6500;
+    }
+
+    .place-order-button {
+        min-height: 48px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 0 22px;
+        border: none;
+        border-radius: 10px;
+        background: #ff6f00;
+        color: #ffffff;
+        font-family: inherit;
+        font-size: 0.82rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .place-order-button:hover {
+        background: #e86100;
+        transform: translateY(-1px);
+        box-shadow: 0 10px 24px rgba(255, 111, 0, 0.2);
+    }
+
+    /* ORDER SUMMARY */
+
+    .order-summary {
+        position: sticky;
+        top: 95px;
+        background: #ffffff;
+        border: 1px solid #ece5df;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 32px rgba(35, 24, 17, 0.07);
+    }
+
+    .summary-header {
+        padding: 24px 24px 19px;
+        border-bottom: 1px solid #eee8e2;
+    }
+
+    .summary-header h2 {
+        margin: 0 0 5px;
+        color: #29221e;
+        font-family: "Playfair Display", serif;
+        font-size: 1.55rem;
+    }
+
+    .summary-header p {
+        margin: 0;
+        color: #948a82;
+        font-size: 0.72rem;
+    }
+
+    .summary-items {
+        padding: 5px 24px;
+        max-height: 350px;
+        overflow-y: auto;
+    }
+
+    .summary-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 15px 0;
+        border-bottom: 1px solid #f0ebe7;
+    }
+
+    .summary-item:last-child {
+        border-bottom: none;
+    }
+
+    .summary-image {
+        width: 52px;
+        height: 52px;
+        flex: 0 0 52px;
+        overflow: hidden;
+        border-radius: 9px;
+        background: #f5f1ed;
+    }
+
+    .summary-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .summary-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #c0b6ae;
+    }
+
+    .summary-item-info {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .summary-item-info h3 {
+        overflow: hidden;
+        margin: 0 0 4px;
+        color: #3a312c;
+        font-size: 0.76rem;
+        font-weight: 800;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .summary-item-info span {
+        color: #978d85;
+        font-size: 0.68rem;
+    }
+
+    .summary-item-price {
+        color: #332a25;
+        font-size: 0.78rem;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    .summary-bottom {
+        padding: 20px 24px 24px;
+        border-top: 1px solid #eee8e2;
+        background: #fcfbfa;
+    }
+
+    .summary-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 8px 0;
+        color: #756b64;
+        font-size: 0.78rem;
+    }
+
+    .summary-row strong {
+        color: #413833;
+        font-weight: 800;
+    }
+
+    .summary-divider {
+        height: 1px;
+        margin: 9px 0;
+        background: #e9e2dc;
+    }
+
+    .summary-total {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding-top: 8px;
+    }
+
+    .summary-total span {
+        color: #29221e;
+        font-size: 0.86rem;
+        font-weight: 800;
+    }
+
+    .summary-total strong {
+        color: #ed6500;
+        font-size: 1.35rem;
+        font-weight: 900;
+    }
+
+    .secure-note {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        margin-top: 17px;
+        color: #9b928c;
+        font-size: 0.68rem;
+    }
+
+    .secure-note i {
+        color: #6d9c71;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 900px) {
+        .checkout-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .order-summary {
+            position: static;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .checkout-page {
+            padding: 40px 14px 60px;
+        }
+
+        .checkout-card-header,
+        .checkout-form {
+            padding: 21px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 17px;
+        }
+
+        .form-group.full-width {
+            grid-column: auto;
+        }
+
+        .checkout-actions {
+            align-items: stretch;
+            flex-direction: column-reverse;
+        }
+
+        .place-order-button {
+            width: 100%;
+        }
+
+        .back-cart {
+            justify-content: center;
+        }
+
+        .summary-header,
+        .summary-items,
+        .summary-bottom {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+    }
+</style>
 {% endblock %}
 
+{% block content %}
+
+<section class="checkout-page">
+
+    <div class="checkout-container">
+
+        <!-- HEADER -->
+
+        <div class="checkout-header">
+
+            <div class="checkout-label">
+                <i class="bi bi-credit-card"></i>
+                Secure Checkout
+            </div>
+
+            <h1>Complete your order.</h1>
+
+            <p>
+                Enter your delivery details and review your order
+                before placing it.
+            </p>
+
+        </div>
+
+        <div class="checkout-layout">
+
+            <!-- DELIVERY FORM -->
+
+            <div class="checkout-card">
+
+                <div class="checkout-card-header">
+                    <h2>Delivery information</h2>
+                    <p>
+                        We'll use these details to prepare your order.
+                    </p>
+                </div>
+
+                <form
+                    method="POST"
+                    action="{% url 'place_order' %}"
+                    class="checkout-form"
+                >
+
+                    {% csrf_token %}
+
+                    <div class="form-section-title">
+                        <span>
+                            <i class="bi bi-person"></i>
+                        </span>
+                        Contact & delivery details
+                    </div>
+
+                    <div class="form-grid">
+
+                        {% for field in form %}
+
+                            <div class="form-group
+                                {% if field.name == 'address' %}
+                                    full-width
+                                {% endif %}
+                            ">
+
+                                {{ field.label_tag }}
+
+                                {{ field }}
+
+                                {% if field.errors %}
+                                    <div class="field-errors">
+                                        {% for error in field.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+
+                                {% if field.help_text %}
+                                    <div class="field-help">
+                                        {{ field.help_text }}
+                                    </div>
+                                {% endif %}
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                    <div class="checkout-actions">
+
+                        <a
+                            href="{% url 'view_cart' %}"
+                            class="back-cart"
+                        >
+                            <i class="bi bi-arrow-left"></i>
+                            Back to cart
+                        </a>
+
+                        <button
+                            type="submit"
+                            class="place-order-button"
+                        >
+                            Place Order
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+            <!-- ORDER SUMMARY -->
+
+            <aside class="order-summary">
+
+                <div class="summary-header">
+
+                    <h2>Your order</h2>
+
+                    <p>
+                        {{ cart_items|length }}
+                        {% if cart_items|length == 1 %}
+                            item
+                        {% else %}
+                            items
+                        {% endif %}
+                        in your cart
+                    </p>
+
+                </div>
+
+                <div class="summary-items">
+
+                    {% for item in cart_items %}
+
+                        <div class="summary-item">
+
+                            <div class="summary-image">
+
+                                {% if item.food_item.image %}
+
+                                    <img
+                                        src="{{ item.food_item.image.url }}"
+                                        alt="{{ item.food_item.name }}"
+                                    >
+
+                                {% else %}
+
+                                    <div class="summary-placeholder">
+                                        <i class="bi bi-egg-fried"></i>
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+                            <div class="summary-item-info">
+
+                                <h3>
+                                    {{ item.food_item.name }}
+                                </h3>
+
+                                <span>
+                                    Qty {{ item.quantity }}
+                                </span>
+
+                            </div>
+
+                            <div class="summary-item-price">
+                                ₹{{ item.total_price|floatformat:0 }}
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+                <div class="summary-bottom">
+
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+
+                        <strong>
+                            ₹{{ total_amount|floatformat:0 }}
+                        </strong>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>Delivery</span>
+
+                        <strong>Free</strong>
+                    </div>
+
+                    <div class="summary-divider"></div>
+
+                    <div class="summary-total">
+                        <span>Total</span>
+
+                        <strong>
+                            ₹{{ total_amount|floatformat:0 }}
+                        </strong>
+                    </div>
+
+                    <div class="secure-note">
+                        <i class="bi bi-shield-check"></i>
+                        Secure order processing
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

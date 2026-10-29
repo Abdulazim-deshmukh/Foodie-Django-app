@@ -1,59 +1,508 @@
-{% extends 'base.html' %}
 
-{% block title %}Register{% endblock %}
+{% extends "Base.html" %}
+
+{% block title %}Create Account | Foodie{% endblock %}
 
 {% block extra_css %}
 <style>
-/* Your custom CSS here, if any */
+    .register-page {
+        min-height: calc(100vh - 180px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 65px 20px;
+        background:
+            radial-gradient(circle at 8% 15%, rgba(255, 245, 235, 0.95), transparent 35%),
+            radial-gradient(circle at 92% 85%, rgba(255, 237, 220, 0.85), transparent 35%),
+            #faf9f7;
+    }
+
+    .register-wrapper {
+        width: 100%;
+        max-width: 1100px;
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr;
+        background: #ffffff;
+        border: 1px solid #eee8e2;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 25px 70px rgba(35, 24, 17, 0.12);
+    }
+
+    /* LEFT PANEL */
+
+    .register-visual {
+        position: relative;
+        padding: 55px;
+        min-height: 650px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: hidden;
+        color: #ffffff;
+        background:
+            linear-gradient(
+                145deg,
+                rgba(255, 111, 0, 0.97),
+                rgba(235, 78, 0, 0.97)
+            );
+    }
+
+    .register-visual::before {
+        content: "";
+        position: absolute;
+        width: 360px;
+        height: 360px;
+        border-radius: 50%;
+        top: -150px;
+        right: -130px;
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .register-visual::after {
+        content: "";
+        position: absolute;
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        bottom: -130px;
+        left: -110px;
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .visual-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .visual-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 28px;
+    }
+
+    .visual-title {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(2.7rem, 4vw, 4.1rem);
+        line-height: 1.05;
+        font-weight: 700;
+        margin: 0 0 22px;
+    }
+
+    .visual-text {
+        max-width: 390px;
+        margin: 0;
+        color: rgba(255, 255, 255, 0.86);
+        font-size: 0.98rem;
+        line-height: 1.8;
+    }
+
+    .benefit-list {
+        position: relative;
+        z-index: 2;
+        list-style: none;
+        padding: 0;
+        margin: 35px 0 0;
+    }
+
+    .benefit-list li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 15px;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.87rem;
+    }
+
+    .benefit-list i {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.14);
+        font-size: 0.72rem;
+    }
+
+    .visual-footer {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: rgba(255, 255, 255, 0.76);
+        font-size: 0.78rem;
+    }
+
+    /* RIGHT PANEL */
+
+    .register-form-section {
+        padding: 55px 60px;
+        display: flex;
+        align-items: center;
+    }
+
+    .register-form-container {
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .register-heading {
+        margin-bottom: 30px;
+    }
+
+    .register-heading h1 {
+        font-family: "Playfair Display", serif;
+        font-size: 2.45rem;
+        line-height: 1.15;
+        color: #1f1a17;
+        font-weight: 700;
+        margin: 0 0 9px;
+    }
+
+    .register-heading p {
+        margin: 0;
+        color: #81766e;
+        font-size: 0.92rem;
+        line-height: 1.6;
+    }
+
+    /* DJANGO FORM */
+
+    .register-form {
+        width: 100%;
+    }
+
+    .field-group {
+        margin-bottom: 18px;
+    }
+
+    .field-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #302923;
+        font-size: 0.83rem;
+        font-weight: 700;
+    }
+
+    .field-group input {
+        width: 100%;
+        height: 50px;
+        padding: 0 15px;
+        border: 1px solid #e3ddd7;
+        border-radius: 11px;
+        background: #fcfbfa;
+        color: #28211d;
+        font-size: 0.92rem;
+        outline: none;
+        box-sizing: border-box;
+        transition: all 0.2s ease;
+    }
+
+    .field-group input:focus {
+        border-color: #ff6f00;
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(255, 111, 0, 0.09);
+    }
+
+    .field-group input::placeholder {
+        color: #b1a8a2;
+    }
+
+    .field-help {
+        margin-top: 6px;
+        color: #9a918b;
+        font-size: 0.72rem;
+        line-height: 1.5;
+    }
+
+    .field-error {
+        margin-top: 6px;
+        color: #c0392b;
+        font-size: 0.75rem;
+        line-height: 1.5;
+    }
+
+    .form-non-field-error {
+        padding: 12px 14px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        background: #fff2f0;
+        border: 1px solid #f5d0ca;
+        color: #b0392e;
+        font-size: 0.82rem;
+    }
+
+    .register-button {
+        width: 100%;
+        height: 52px;
+        margin-top: 8px;
+        border: none;
+        border-radius: 11px;
+        background: #ff6f00;
+        color: #ffffff;
+        font-size: 0.91rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .register-button:hover {
+        background: #e86100;
+        transform: translateY(-1px);
+        box-shadow: 0 10px 25px rgba(255, 111, 0, 0.22);
+    }
+
+    .register-button:active {
+        transform: translateY(0);
+    }
+
+    .login-prompt {
+        text-align: center;
+        margin: 25px 0 0;
+        color: #81766e;
+        font-size: 0.87rem;
+    }
+
+    .login-prompt a {
+        color: #ff6f00;
+        font-weight: 800;
+        text-decoration: none;
+        margin-left: 4px;
+    }
+
+    .login-prompt a:hover {
+        text-decoration: underline;
+    }
+
+    .registration-security {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 7px;
+        margin-top: 22px;
+        color: #9b928c;
+        font-size: 0.73rem;
+    }
+
+    .registration-security i {
+        color: #6d9c71;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 900px) {
+        .register-wrapper {
+            grid-template-columns: 1fr;
+            max-width: 580px;
+        }
+
+        .register-visual {
+            min-height: auto;
+            padding: 42px;
+        }
+
+        .visual-title {
+            font-size: 2.8rem;
+        }
+
+        .benefit-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 20px;
+            margin-bottom: 20px;
+        }
+
+        .benefit-list li {
+            margin-bottom: 5px;
+        }
+
+        .register-form-section {
+            padding: 50px 42px;
+        }
+    }
+
+    @media (max-width: 520px) {
+        .register-page {
+            padding: 30px 14px;
+        }
+
+        .register-wrapper {
+            border-radius: 20px;
+        }
+
+        .register-visual {
+            padding: 32px 25px;
+        }
+
+        .visual-title {
+            font-size: 2.3rem;
+        }
+
+        .visual-text {
+            font-size: 0.88rem;
+        }
+
+        .benefit-list {
+            display: block;
+        }
+
+        .benefit-list li {
+            margin-bottom: 12px;
+        }
+
+        .register-form-section {
+            padding: 40px 25px;
+        }
+
+        .register-heading h1 {
+            font-size: 2.15rem;
+        }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-  <h2>Register</h2>
-  <form method="post" action="{% url 'register' %}">
-    {% csrf_token %}
-    <div class="mb-3">
-      <label for="name" class="form-label">Full Name</label>
-      <input type="text" name="name" id="name" class="form-control" required>
+
+<section class="register-page">
+
+    <div class="register-wrapper">
+
+        <!-- LEFT SIDE -->
+        <div class="register-visual">
+
+            <div class="visual-content">
+
+                <div class="visual-label">
+                    <i class="bi bi-heart-fill"></i>
+                    Join Foodie
+                </div>
+
+                <h2 class="visual-title">
+                    Your next<br>
+                    favourite meal.
+                </h2>
+
+                <p class="visual-text">
+                    Create your Foodie account and make ordering
+                    delicious food simple, quick, and enjoyable.
+                </p>
+
+                <ul class="benefit-list">
+
+                    <li>
+                        <i class="bi bi-check-lg"></i>
+                        Discover delicious food
+                    </li>
+
+                    <li>
+                        <i class="bi bi-check-lg"></i>
+                        Add meals to your cart
+                    </li>
+
+                    <li>
+                        <i class="bi bi-check-lg"></i>
+                        Place orders easily
+                    </li>
+
+                    <li>
+                        <i class="bi bi-check-lg"></i>
+                        Track your order history
+                    </li>
+
+                </ul>
+
+            </div>
+
+            <div class="visual-footer">
+                <i class="bi bi-stars"></i>
+                Made for people who love good food.
+            </div>
+
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div class="register-form-section">
+
+            <div class="register-form-container">
+
+                <div class="register-heading">
+                    <h1>Create your account</h1>
+                    <p>Join Foodie and start exploring our menu.</p>
+                </div>
+
+                <form
+                    method="POST"
+                    action="{% url 'register' %}"
+                    class="register-form"
+                >
+
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="form-non-field-error">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    {% for field in form %}
+
+                        <div class="field-group">
+
+                            {{ field.label_tag }}
+
+                            {{ field }}
+
+                            {% if field.help_text %}
+                                <div class="field-help">
+                                    {{ field.help_text|safe }}
+                                </div>
+                            {% endif %}
+
+                            {% for error in field.errors %}
+                                <div class="field-error">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+
+                        </div>
+
+                    {% endfor %}
+
+                    <button type="submit" class="register-button">
+                        Create Account
+                        <i class="bi bi-arrow-right ms-1"></i>
+                    </button>
+
+                </form>
+
+                <p class="login-prompt">
+                    Already have an account?
+                    <a href="{% url 'login' %}">Sign in</a>
+                </p>
+
+                <div class="registration-security">
+                    <i class="bi bi-shield-check"></i>
+                    Your account is securely protected
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <div class="mb-3">
-      <label for="phone" class="form-label">Phone</label>
-      <input type="text" name="phone" id="phone" class="form-control">
-    </div>
+</section>
 
-    <div class="mb-3">
-      <label for="address" class="form-label">Address</label>
-      <textarea name="address" id="address" class="form-control"></textarea>
-    </div>
-
-    <div class="mb-3">
-      <label for="city" class="form-label">City</label>
-      <input type="text" name="city" id="city" class="form-control">
-    </div>
-
-    <div class="mb-3">
-      <label for="pincode" class="form-label">Pincode</label>
-      <input type="text" name="pincode" id="pincode" class="form-control">
-    </div>
-
-    <div class="mb-3">
-      <label for="email" class="form-label">Email ID</label>
-      <input type="email" name="email" id="email" class="form-control" required>
-    </div>
-
-    <div class="mb-3">
-      <label for="password" class="form-label">Password</label>
-      <input type="password" name="password" id="password" class="form-control" required>
-    </div>
-
-    <div class="mb-3">
-      <label for="confirm_password" class="form-label">Confirm Password</label>
-      <input type="password" name="confirm_password" id="confirm_password" class="form-control" required>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Register</button>
-  </form>
-</div>
 {% endblock %}

@@ -1,104 +1,1133 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1"> {# Responsive #}
-  <title>{% block title %}Foodie{% endblock %}</title>
 
-  <!-- Bootstrap CSS CDN -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
 
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Foodie - Delicious food, simple ordering, and a better dining experience."
+    >
+
+    <title>
+        {% block title %}Foodie{% endblock %}
+    </title>
 
 
+    <!-- =========================================================
+         GOOGLE FONT
+    ========================================================== -->
 
-  {% block extra_css %}{% endblock %}
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- =========================================================
+         BOOTSTRAP
+    ========================================================== -->
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+
+    <!-- =========================================================
+         BOOTSTRAP ICONS
+    ========================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
+
+    <!-- =========================================================
+         FOODIE MAIN CSS
+    ========================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/style.css' %}"
+    >
+
+
+    <!-- =========================================================
+         GLOBAL FOODIE DESIGN
+    ========================================================== -->
+
+    <style>
+
+        :root {
+            --foodie-primary: #ff5a36;
+            --foodie-primary-dark: #e84826;
+            --foodie-dark: #171717;
+            --foodie-text: #252525;
+            --foodie-muted: #737373;
+            --foodie-border: #ececec;
+            --foodie-background: #fafafa;
+            --foodie-white: #ffffff;
+            --foodie-radius: 16px;
+            --foodie-shadow: 0 10px 35px rgba(0, 0, 0, 0.07);
+        }
+
+
+        /* =====================================================
+           GLOBAL
+        ====================================================== */
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background: var(--foodie-background);
+            color: var(--foodie-text);
+            font-family: "Inter", sans-serif;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            transition:
+                color 0.2s ease,
+                background-color 0.2s ease,
+                border-color 0.2s ease,
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+
+        /* =====================================================
+           NAVBAR
+        ====================================================== */
+
+        .foodie-navbar {
+            background: rgba(255, 255, 255, 0.96);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            min-height: 76px;
+            z-index: 1030;
+        }
+
+        .foodie-navbar .container {
+            min-height: 76px;
+        }
+
+
+        /* BRAND */
+
+        .foodie-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            color: var(--foodie-dark) !important;
+            text-decoration: none;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .foodie-brand:hover {
+            color: var(--foodie-dark) !important;
+        }
+
+        .foodie-brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--foodie-primary);
+            color: white;
+            font-size: 1.2rem;
+            box-shadow: 0 7px 18px rgba(255, 90, 54, 0.25);
+        }
+
+        .foodie-brand-name {
+            font-size: 1.45rem;
+            line-height: 1;
+            letter-spacing: -0.8px;
+        }
+
+
+        /* NAV LINKS */
+
+        .foodie-navbar .nav-link {
+            position: relative;
+            color: #555 !important;
+            font-size: 0.91rem;
+            font-weight: 600;
+            padding: 10px 14px !important;
+            border-radius: 10px;
+        }
+
+        .foodie-navbar .nav-link:hover {
+            color: var(--foodie-primary) !important;
+            background: #fff5f2;
+        }
+
+        .foodie-navbar .nav-link i {
+            font-size: 0.95rem;
+        }
+
+
+        /* ACCOUNT */
+
+        .foodie-account-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .foodie-account-icon {
+            width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #fff1ed;
+            color: var(--foodie-primary);
+            font-size: 1rem;
+        }
+
+
+        /* REGISTER BUTTON */
+
+        .foodie-register-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            background: var(--foodie-primary);
+            border: 1px solid var(--foodie-primary);
+            color: #fff !important;
+            padding: 10px 18px !important;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            box-shadow: 0 7px 18px rgba(255, 90, 54, 0.18);
+        }
+
+        .foodie-register-btn:hover {
+            background: var(--foodie-primary-dark);
+            border-color: var(--foodie-primary-dark);
+            color: #fff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(255, 90, 54, 0.24);
+        }
+
+
+        /* MOBILE TOGGLER */
+
+        .foodie-navbar .navbar-toggler {
+            border: 1px solid #e5e5e5;
+            border-radius: 10px;
+            padding: 8px 10px;
+            box-shadow: none;
+        }
+
+        .foodie-navbar .navbar-toggler:focus {
+            box-shadow: 0 0 0 3px rgba(255, 90, 54, 0.12);
+        }
+
+
+        /* =====================================================
+           DROPDOWN
+        ====================================================== */
+
+        .foodie-dropdown {
+            min-width: 235px;
+            margin-top: 12px !important;
+            padding: 8px;
+            border: 1px solid var(--foodie-border);
+            border-radius: 14px;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12);
+        }
+
+        .foodie-dropdown .dropdown-item {
+            padding: 10px 12px;
+            border-radius: 9px;
+            color: #444;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .foodie-dropdown .dropdown-item:hover {
+            background: #fff5f2;
+            color: var(--foodie-primary);
+        }
+
+        .foodie-dropdown .dropdown-item i {
+            width: 22px;
+        }
+
+        .foodie-dropdown .dropdown-divider {
+            border-color: #eeeeee;
+            margin: 7px 4px;
+        }
+
+        .foodie-account-email {
+            display: block;
+            padding: 10px 12px;
+            color: #777;
+            font-size: 0.78rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+
+        /* =====================================================
+           DJANGO MESSAGES
+        ====================================================== */
+
+        .foodie-messages {
+            padding-top: 18px;
+        }
+
+        .foodie-alert {
+            border: 1px solid transparent;
+            border-radius: 12px;
+            padding: 13px 16px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.04);
+        }
+
+        .foodie-alert.alert-success {
+            background: #effaf3;
+            border-color: #cdebd7;
+            color: #176b35;
+        }
+
+        .foodie-alert.alert-danger {
+            background: #fff1f1;
+            border-color: #f2cccc;
+            color: #a22626;
+        }
+
+        .foodie-alert.alert-warning {
+            background: #fff9e8;
+            border-color: #f1dfaa;
+            color: #805f08;
+        }
+
+        .foodie-alert.alert-info {
+            background: #eef7ff;
+            border-color: #cce2f7;
+            color: #195a8a;
+        }
+
+
+        /* =====================================================
+           MAIN CONTENT
+        ====================================================== */
+
+        main {
+            min-height: calc(100vh - 76px);
+        }
+
+
+        /* =====================================================
+           COMMON PROFESSIONAL UI
+        ====================================================== */
+
+        .foodie-card {
+            background: var(--foodie-white);
+            border: 1px solid var(--foodie-border);
+            border-radius: var(--foodie-radius);
+            box-shadow: var(--foodie-shadow);
+        }
+
+        .foodie-section-title {
+            color: var(--foodie-dark);
+            font-weight: 800;
+            letter-spacing: -0.6px;
+        }
+
+        .foodie-muted {
+            color: var(--foodie-muted);
+        }
+
+        .foodie-primary-text {
+            color: var(--foodie-primary);
+        }
+
+        .foodie-primary-btn {
+            background: var(--foodie-primary);
+            border-color: var(--foodie-primary);
+            color: #fff;
+            font-weight: 700;
+            border-radius: 10px;
+            padding: 11px 20px;
+        }
+
+        .foodie-primary-btn:hover {
+            background: var(--foodie-primary-dark);
+            border-color: var(--foodie-primary-dark);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+
+        /* =====================================================
+           FOOTER
+        ====================================================== */
+
+        .foodie-footer {
+            margin-top: 80px;
+            background: #171717;
+            color: #fff;
+        }
+
+        .foodie-footer-inner {
+            padding: 65px 0 25px;
+        }
+
+        .foodie-footer-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #fff !important;
+            font-weight: 800;
+        }
+
+        .foodie-footer-brand-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--foodie-primary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .foodie-footer-brand-name {
+            font-size: 1.35rem;
+        }
+
+        .foodie-footer-description {
+            color: #999;
+            max-width: 400px;
+            margin-top: 16px;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .foodie-footer-heading {
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 18px;
+        }
+
+        .foodie-footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .foodie-footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .foodie-footer-links a {
+            color: #999;
+            text-decoration: none;
+            font-size: 0.88rem;
+        }
+
+        .foodie-footer-links a:hover {
+            color: #fff;
+            padding-left: 3px;
+        }
+
+        .foodie-footer-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+        }
+
+        .foodie-footer-feature {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 11px;
+            border: 1px solid #333;
+            border-radius: 9px;
+            color: #aaa;
+            font-size: 0.78rem;
+        }
+
+        .foodie-footer-feature i {
+            color: var(--foodie-primary);
+        }
+
+        .foodie-footer-bottom {
+            border-top: 1px solid #2d2d2d;
+            margin-top: 45px;
+            padding-top: 20px;
+            color: #777;
+            font-size: 0.78rem;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ====================================================== */
+
+        @media (max-width: 991.98px) {
+
+            .foodie-navbar .navbar-collapse {
+                padding: 15px 0 10px;
+            }
+
+            .foodie-navbar .nav-link {
+                padding: 11px 12px !important;
+            }
+
+            .foodie-register-btn {
+                margin-top: 6px;
+                display: inline-flex;
+            }
+
+            .foodie-dropdown {
+                margin-top: 5px !important;
+                box-shadow: none;
+            }
+
+        }
+
+
+        @media (max-width: 575.98px) {
+
+            .foodie-brand-name {
+                font-size: 1.3rem;
+            }
+
+            .foodie-brand-icon {
+                width: 39px;
+                height: 39px;
+            }
+
+            .foodie-footer-inner {
+                padding: 48px 0 20px;
+            }
+
+        }
+
+    </style>
+
+
+    {% block extra_css %}
+    {% endblock %}
+
 </head>
+
 
 <body>
 
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="padding: 10px;">
+
+<!-- =========================================================
+     NAVBAR
+========================================================== -->
+
+<nav class="navbar navbar-expand-lg foodie-navbar sticky-top">
+
     <div class="container">
-      <a class="navbar-brand" href="{% url 'home' %}">Foodie</a>
-
-      <!-- Toggler/collapsible Button -->
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#ftco-nav"
-        aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="ftco-nav">
-        <ul class="navbar-nav ms-auto">
-
-          {# Unauthenticated users #}
-          {% if 'cust_emailId' not in request.session and 'admin' not in request.session %}
-          <li class="nav-item"><a href="{% url 'login' %}" class="nav-link text-white fw-bold">Login</a></li>
-          <li class="nav-item"><a href="{% url 'register' %}" class="nav-link text-white fw-bold">Register</a></li>
-          {% endif %}
-
-          {% if request.session.cust_emailId and not request.session.admin %}
-          <li class="nav-item">
-            <a href="{% url 'menu' %}" class="nav-link text-white fw-bold">Menu</a>
-          </li>
-
-          <li class="nav-item">
-            <a href="{% url 'order_history' %}" class="nav-link text-white fw-bold">My Orders</a>
-          </li>
-
-          <li class="nav-item" style="display: flex; align-items: center;">
-            <form method="post" action="{% url 'logout' %}" class="d-inline" style="margin: 0;">
-              {% csrf_token %}
-              <button type="submit"
-                style="background: none; border: none; color: white; font-weight: bold; padding: 6px 12px; cursor: pointer; font-size: 1rem; line-height: 1; vertical-align: middle;">
-                Logout
-              </button>
-            </form>
-          </li>
-
-          {% endif %}
 
 
-          {# Admin logged in #}
-          {% if 'admin' in request.session and 'cust_emailId' not in request.session %}
-          <li class="nav-item">
-            <a href="{% url 'addfood' %}" class="nav-link text-white fw-bold">Add Food</a>
-          </li>
+        <!-- BRAND -->
 
-          <li class="nav-item d-flex align-items-center">
-            <form method="post" action="{% url 'logout' %}" class="m-0">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-link nav-link text-white fw-bold p-0 m-0"
-                style="text-decoration: none;">
-                Logout
-              </button>
-            </form>
-          </li>
+        <a
+            class="foodie-brand"
+            href="{% url 'home' %}"
+        >
 
-          <li class="nav-item">
-            <a href="{% url 'customers' %}" class="nav-link text-white fw-bold">Customer List</a>
-          </li>
+            <span class="foodie-brand-icon">
+                <i class="bi bi-egg-fried"></i>
+            </span>
 
-          <li class="nav-item">
-            <a href="{% url 'menu' %}" class="nav-link text-white fw-bold">Menu</a>
-          </li>
-          {% endif %}
+            <span class="foodie-brand-name">
+                Foodie
+            </span>
+
+        </a>
 
 
-        </ul>
-      </div>
+        <!-- MOBILE MENU -->
+
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#foodieNavbar"
+            aria-controls="foodieNavbar"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+        >
+
+            <i class="bi bi-list fs-4"></i>
+
+        </button>
+
+
+        <!-- NAVIGATION -->
+
+        <div
+            class="collapse navbar-collapse"
+            id="foodieNavbar"
+        >
+
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+
+
+                <!-- HOME -->
+
+                <li class="nav-item">
+
+                    <a
+                        class="nav-link"
+                        href="{% url 'home' %}"
+                    >
+
+                        <i class="bi bi-house-door me-1"></i>
+                        Home
+
+                    </a>
+
+                </li>
+
+
+                <!-- LOGGED-IN CUSTOMER -->
+
+                {% if user.is_authenticated %}
+
+
+                    <!-- MENU -->
+
+                    <li class="nav-item">
+
+                        <a
+                            class="nav-link"
+                            href="{% url 'menu' %}"
+                        >
+
+                            <i class="bi bi-grid me-1"></i>
+                            Menu
+
+                        </a>
+
+                    </li>
+
+
+                    <!-- CART -->
+
+                    <li class="nav-item">
+
+                        <a
+                            class="nav-link"
+                            href="{% url 'view_cart' %}"
+                        >
+
+                            <i class="bi bi-bag me-1"></i>
+                            Cart
+
+                        </a>
+
+                    </li>
+
+
+                    <!-- ORDERS -->
+
+                    <li class="nav-item">
+
+                        <a
+                            class="nav-link"
+                            href="{% url 'order_history' %}"
+                        >
+
+                            <i class="bi bi-receipt me-1"></i>
+                            My Orders
+
+                        </a>
+
+                    </li>
+
+
+                    <!-- ACCOUNT -->
+
+                    <li class="nav-item dropdown ms-lg-2">
+
+                        <a
+                            class="nav-link foodie-account-link dropdown-toggle"
+                            href="#"
+                            role="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
+
+                            <span class="foodie-account-icon">
+                                <i class="bi bi-person"></i>
+                            </span>
+
+                            Account
+
+                        </a>
+
+
+                        <ul class="dropdown-menu dropdown-menu-end foodie-dropdown">
+
+
+                            <li>
+
+                                <span class="foodie-account-email">
+
+                                    <i class="bi bi-envelope me-2"></i>
+
+                                    {{ user.email|default:user.username }}
+
+                                </span>
+
+                            </li>
+
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+
+                            <li>
+
+                                <a
+                                    class="dropdown-item"
+                                    href="{% url 'order_history' %}"
+                                >
+
+                                    <i class="bi bi-receipt"></i>
+                                    My Orders
+
+                                </a>
+
+                            </li>
+
+
+                            <li>
+
+                                <a
+                                    class="dropdown-item"
+                                    href="{% url 'view_cart' %}"
+                                >
+
+                                    <i class="bi bi-bag"></i>
+                                    My Cart
+
+                                </a>
+
+                            </li>
+
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+
+                            <li>
+
+                                <a
+                                    class="dropdown-item text-danger"
+                                    href="{% url 'logout' %}"
+                                >
+
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    Logout
+
+                                </a>
+
+                            </li>
+
+
+                        </ul>
+
+                    </li>
+
+
+                <!-- GUEST -->
+
+                {% else %}
+
+
+                    <!-- LOGIN -->
+
+                    <li class="nav-item">
+
+                        <a
+                            class="nav-link"
+                            href="{% url 'login' %}"
+                        >
+
+                            <i class="bi bi-box-arrow-in-right me-1"></i>
+                            Login
+
+                        </a>
+
+                    </li>
+
+
+                    <!-- REGISTER -->
+
+                    <li class="nav-item ms-lg-2">
+
+                        <a
+                            href="{% url 'register' %}"
+                            class="foodie-register-btn"
+                        >
+
+                            <i class="bi bi-person-plus"></i>
+                            Register
+
+                        </a>
+
+                    </li>
+
+
+                {% endif %}
+
+
+            </ul>
+
+        </div>
+
     </div>
-  </nav>
+
+</nav>
 
 
-  <div class="container mt-4">
+<!-- =========================================================
+     DJANGO MESSAGES
+========================================================== -->
+
+{% if messages %}
+
+    <div class="container foodie-messages">
+
+        {% for message in messages %}
+
+            <div
+                class="
+                    alert
+                    foodie-alert
+                    {% if message.tags == 'error' %}
+                        alert-danger
+                    {% elif message.tags == 'success' %}
+                        alert-success
+                    {% elif message.tags == 'warning' %}
+                        alert-warning
+                    {% else %}
+                        alert-info
+                    {% endif %}
+                    alert-dismissible
+                    fade
+                    show
+                "
+                role="alert"
+            >
+
+                {% if message.tags == 'success' %}
+
+                    <i class="bi bi-check-circle-fill me-2"></i>
+
+                {% elif message.tags == 'error' %}
+
+                    <i class="bi bi-exclamation-circle-fill me-2"></i>
+
+                {% elif message.tags == 'warning' %}
+
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+                {% else %}
+
+                    <i class="bi bi-info-circle-fill me-2"></i>
+
+                {% endif %}
+
+
+                {{ message }}
+
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close"
+                ></button>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+{% endif %}
+
+
+<!-- =========================================================
+     MAIN CONTENT
+========================================================== -->
+
+<main>
+
     {% block content %}
     {% endblock %}
-  </div>
 
-  <!-- Bootstrap JS Bundle (with Popper) CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</main>
+
+
+<!-- =========================================================
+     FOOTER
+========================================================== -->
+
+<footer class="foodie-footer">
+
+    <div class="container foodie-footer-inner">
+
+        <div class="row g-5">
+
+
+            <!-- BRAND -->
+
+            <div class="col-lg-5 col-md-6">
+
+                <a
+                    href="{% url 'home' %}"
+                    class="foodie-footer-brand"
+                >
+
+                    <span class="foodie-footer-brand-icon">
+                        <i class="bi bi-egg-fried"></i>
+                    </span>
+
+                    <span class="foodie-footer-brand-name">
+                        Foodie
+                    </span>
+
+                </a>
+
+
+                <p class="foodie-footer-description">
+
+                    Delicious food, simple ordering,
+                    and a better dining experience.
+                    Discover your favorites and order
+                    them with ease.
+
+                </p>
+
+
+                <div class="foodie-footer-features">
+
+                    <span class="foodie-footer-feature">
+                        <i class="bi bi-emoji-smile"></i>
+                        Fresh Food
+                    </span>
+
+                    <span class="foodie-footer-feature">
+                        <i class="bi bi-bag-check"></i>
+                        Easy Ordering
+                    </span>
+
+                    <span class="foodie-footer-feature">
+                        <i class="bi bi-shield-check"></i>
+                        Secure Checkout
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUICK LINKS -->
+
+            <div class="col-lg-2 col-md-3">
+
+                <h6 class="foodie-footer-heading">
+                    Explore
+                </h6>
+
+                <ul class="foodie-footer-links">
+
+                    <li>
+                        <a href="{% url 'home' %}">
+                            Home
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'menu' %}">
+                            Menu
+                        </a>
+                    </li>
+
+                    {% if user.is_authenticated %}
+
+                        <li>
+                            <a href="{% url 'view_cart' %}">
+                                Cart
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'order_history' %}">
+                                My Orders
+                            </a>
+                        </li>
+
+                    {% else %}
+
+                        <li>
+                            <a href="{% url 'login' %}">
+                                Login
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'register' %}">
+                                Register
+                            </a>
+                        </li>
+
+                    {% endif %}
+
+                </ul>
+
+            </div>
+
+
+            <!-- ACCOUNT / FEATURES -->
+
+            <div class="col-lg-5 col-md-3">
+
+                <h6 class="foodie-footer-heading">
+                    Why Foodie?
+                </h6>
+
+
+                <ul class="foodie-footer-links">
+
+                    <li>
+                        <a href="{% url 'menu' %}">
+                            Browse our menu
+                        </a>
+                    </li>
+
+                    {% if user.is_authenticated %}
+
+                        <li>
+                            <a href="{% url 'view_cart' %}">
+                                Manage your cart
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'order_history' %}">
+                                Track your orders
+                            </a>
+                        </li>
+
+                    {% else %}
+
+                        <li>
+                            <a href="{% url 'register' %}">
+                                Create your account
+                            </a>
+                        </li>
+
+                    {% endif %}
+
+                </ul>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- FOOTER BOTTOM -->
+
+        <div class="foodie-footer-bottom">
+
+            <div class="row align-items-center g-3">
+
+                <div class="col-md-6">
+
+                    © {% now "Y" %} Foodie.
+                    All rights reserved.
+
+                </div>
+
+
+                <div class="col-md-6 text-md-end">
+
+                    Made with
+                    <i class="bi bi-heart-fill text-danger"></i>
+                    for food lovers.
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+<!-- =========================================================
+     BOOTSTRAP JS
+========================================================== -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+
+
+{% block extra_js %}
+{% endblock %}
+
 
 </body>
 

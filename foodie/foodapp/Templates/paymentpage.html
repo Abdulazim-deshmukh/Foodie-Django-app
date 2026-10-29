@@ -1,107 +1,739 @@
+{% extends 'Base.html' %}
 
-{% extends 'base.html' %}
+{% block title %}Secure Payment | Foodie{% endblock %}
+
+{% block extra_css %}
+<style>
+    .payment-page {
+        min-height: calc(100vh - 180px);
+        padding: 55px 20px 80px;
+        background:
+            radial-gradient(circle at 8% 8%, rgba(255, 239, 224, 0.85), transparent 30%),
+            #faf9f7;
+    }
+
+    .payment-wrapper {
+        max-width: 760px;
+        margin: 0 auto;
+    }
+
+    /* ---------------------------------------------------------
+       HEADER
+    --------------------------------------------------------- */
+
+    .payment-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .payment-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 14px;
+        margin-bottom: 14px;
+        border-radius: 50px;
+        background: #fff1e6;
+        color: #ed6500;
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .payment-header h1 {
+        margin: 0 0 9px;
+        color: #211b18;
+        font-family: "Playfair Display", serif;
+        font-size: clamp(2.2rem, 5vw, 3rem);
+        font-weight: 700;
+    }
+
+    .payment-header p {
+        max-width: 500px;
+        margin: 0 auto;
+        color: #81766e;
+        font-size: 0.86rem;
+        line-height: 1.7;
+    }
+
+    /* ---------------------------------------------------------
+       MAIN CARD
+    --------------------------------------------------------- */
+
+    .payment-card {
+        overflow: hidden;
+        background: #ffffff;
+        border: 1px solid #ebe4de;
+        border-radius: 22px;
+        box-shadow: 0 14px 40px rgba(35, 24, 17, 0.08);
+    }
+
+    .payment-card-top {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 22px 28px;
+        border-bottom: 1px solid #eee8e2;
+    }
+
+    .payment-icon {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 44px;
+        border-radius: 12px;
+        background: #fff1e6;
+        color: #ed6500;
+        font-size: 1.05rem;
+    }
+
+    .payment-card-top h2 {
+        margin: 0 0 3px;
+        color: #302823;
+        font-size: 1rem;
+        font-weight: 800;
+    }
+
+    .payment-card-top p {
+        margin: 0;
+        color: #9a9088;
+        font-size: 0.7rem;
+    }
+
+    .payment-card-body {
+        padding: 28px;
+    }
+
+    /* ---------------------------------------------------------
+       ORDER DETAILS
+    --------------------------------------------------------- */
+
+    .order-info {
+        padding: 21px;
+        margin-bottom: 22px;
+        background: #faf8f6;
+        border: 1px solid #eee8e2;
+        border-radius: 14px;
+    }
+
+    .info-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 14px;
+        color: #332b26;
+        font-size: 0.86rem;
+        font-weight: 800;
+    }
+
+    .info-title i {
+        color: #ed6500;
+    }
+
+    .info-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee8e2;
+        font-size: 0.76rem;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .info-row:first-of-type {
+        padding-top: 3px;
+    }
+
+    .info-label {
+        color: #928880;
+    }
+
+    .info-value {
+        color: #332b26;
+        font-weight: 700;
+        text-align: right;
+        word-break: break-word;
+    }
+
+    /* ---------------------------------------------------------
+       AMOUNT
+    --------------------------------------------------------- */
+
+    .amount-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 20px 22px;
+        margin-bottom: 24px;
+        background: #fff7f0;
+        border: 1px solid #ffe0c6;
+        border-radius: 14px;
+    }
+
+    .amount-label {
+        color: #81766e;
+        font-size: 0.76rem;
+        font-weight: 700;
+    }
+
+    .amount-label span {
+        display: block;
+        margin-top: 4px;
+        color: #a59b93;
+        font-size: 0.65rem;
+        font-weight: 400;
+    }
+
+    .amount-value {
+        color: #e85f00;
+        font-size: 1.7rem;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    /* ---------------------------------------------------------
+       PAY BUTTON
+    --------------------------------------------------------- */
+
+    .pay-button {
+        width: 100%;
+        min-height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 0 20px;
+        border: none;
+        border-radius: 10px;
+        background: #ff6f00;
+        color: #ffffff;
+        font-family: inherit;
+        font-size: 0.84rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .pay-button:hover {
+        background: #e86100;
+        transform: translateY(-1px);
+        box-shadow: 0 10px 25px rgba(255, 111, 0, 0.22);
+    }
+
+    .pay-button:active {
+        transform: translateY(0);
+    }
+
+    /* ---------------------------------------------------------
+       SECURITY
+    --------------------------------------------------------- */
+
+    .security-note {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        margin-top: 17px;
+        color: #918780;
+        font-size: 0.68rem;
+    }
+
+    .security-note i {
+        color: #6c9a70;
+        font-size: 0.78rem;
+    }
+
+    .payment-methods {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        flex-wrap: wrap;
+        margin-top: 13px;
+        color: #a39a93;
+        font-size: 0.65rem;
+    }
+
+    .payment-method {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .payment-method i {
+        color: #8f857e;
+    }
+
+    .payment-divider {
+        color: #d2cbc5;
+    }
+
+    /* ---------------------------------------------------------
+       MOBILE
+    --------------------------------------------------------- */
+
+    @media (max-width: 600px) {
+
+        .payment-page {
+            padding: 40px 14px 60px;
+        }
+
+        .payment-card-top,
+        .payment-card-body {
+            padding: 21px;
+        }
+
+        .payment-header h1 {
+            font-size: 2.15rem;
+        }
+
+        .info-row {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-value {
+            text-align: left;
+        }
+
+        .amount-box {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .amount-value {
+            font-size: 1.55rem;
+        }
+    }
+</style>
+{% endblock %}
+
 
 {% block content %}
-<style>
-  .payment-container {
-    max-width: 500px;
-    margin: auto;
-    background: #fff;
-    padding: 40px;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
 
-  .payment-container h2 {
-    font-weight: 700;
-    margin-bottom: 30px;
-    color: #343a40;
-  }
+<section class="payment-page">
 
-  .btn-pay {
-    background-color: #F37254;
-    border: none;
-    padding: 12px 25px;
-    font-size: 18px;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
-  }
+    <div class="payment-wrapper">
 
-  .btn-pay:hover {
-    background-color: #d85a3f;
-  }
-</style>
+        <!-- Header -->
+        <div class="payment-header">
 
-<div class="container py-5">
-  <div class="payment-container">
-    <h2>Complete Your Payment</h2>
-    
+            <div class="payment-badge">
+                <i class="bi bi-shield-lock"></i>
+                Secure Checkout
+            </div>
 
-    <form id="razorpay-form">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-pay">Pay ₹{{ amount|floatformat:2 }}</button>
-    </form>
-  </div>
-</div>
+            <h1>Complete your payment.</h1>
+
+            <p>
+                Review your order details and continue securely
+                with Razorpay to confirm your Foodie order.
+            </p>
+
+        </div>
+
+
+        <!-- Payment Card -->
+        <div class="payment-card">
+
+            <!-- Card Header -->
+            <div class="payment-card-top">
+
+                <div class="payment-icon">
+                    <i class="bi bi-credit-card-2-front"></i>
+                </div>
+
+                <div>
+                    <h2>Payment Details</h2>
+
+                    <p>
+                        Your payment is processed securely.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="payment-card-body">
+
+                <!-- Order Information -->
+                <div class="order-info">
+
+                    <div class="info-title">
+                        <i class="bi bi-receipt"></i>
+                        Order Information
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            Order Number
+                        </span>
+
+                        <span class="info-value">
+                            {{ order.orderNo }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            Customer
+                        </span>
+
+                        <span class="info-value">
+                            {{ name }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            Email
+                        </span>
+
+                        <span class="info-value">
+                            {{ email }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            Phone
+                        </span>
+
+                        <span class="info-value">
+                            {{ phone }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Amount -->
+                <div class="amount-box">
+
+                    <div class="amount-label">
+
+                        Amount to Pay
+
+                        <span>
+                            Inclusive of your complete order total
+                        </span>
+
+                    </div>
+
+                    <div class="amount-value">
+                        ₹{{ order.totalbill|floatformat:2 }}
+                    </div>
+
+                </div>
+
+
+                <!-- Razorpay Button -->
+                <button
+                    type="button"
+                    id="rzp-button1"
+                    class="pay-button"
+                >
+
+                    <i class="bi bi-lock-fill"></i>
+
+                    Pay ₹{{ order.totalbill|floatformat:2 }}
+
+                    <i class="bi bi-arrow-right"></i>
+
+                </button>
+
+
+                <!-- Security Note -->
+                <div class="security-note">
+
+                    <i class="bi bi-shield-check"></i>
+
+                    Secure payment powered by Razorpay
+
+                </div>
+
+
+                <!-- Payment Methods -->
+                <div class="payment-methods">
+
+                    <span class="payment-method">
+                        <i class="bi bi-phone"></i>
+                        UPI
+                    </span>
+
+                    <span class="payment-divider">•</span>
+
+                    <span class="payment-method">
+                        <i class="bi bi-credit-card"></i>
+                        Cards
+                    </span>
+
+                    <span class="payment-divider">•</span>
+
+                    <span class="payment-method">
+                        <i class="bi bi-bank"></i>
+                        Net Banking
+                    </span>
+
+                    <span class="payment-divider">•</span>
+
+                    <span class="payment-method">
+                        <i class="bi bi-wallet2"></i>
+                        Wallets
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     RAZORPAY CHECKOUT
+     ========================================================= -->
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+
 <script>
-  var options = {
-    "key": "{{ razorpay_key }}",
-    "amount": "{{ amount }}",  // in paise
-    "currency": "INR",
-    "order_id": "{{ razorpay_order_id }}",
-    "handler": function (response) {
-      // Create a form dynamically
-      var form = document.createElement('form');
-      form.method = 'POST';
-      form.action = "{% url 'payment_success'  %}";
+
+    // =========================================================
+    // RAZORPAY OPTIONS
+    // =========================================================
+
+    var options = {
+
+        "key": "{{ razorpay_key }}",
+
+        "amount": "{{ amount }}",
+
+        "currency": "INR",
+
+        "name": "Foodie",
+
+        "description": "Foodie Order Payment",
+
+        "order_id": "{{ razorpay_order_id }}",
 
 
+        // =====================================================
+        // PAYMENT SUCCESS
+        // =====================================================
+
+        "handler": function (response) {
+
+            console.log(
+                "RAZORPAY PAYMENT SUCCESS:",
+                response
+            );
 
 
-      // CSRF token
-      var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-      var csrfInput = document.createElement('input');
-      csrfInput.type = 'hidden';
-      csrfInput.name = 'csrfmiddlewaretoken';
-      csrfInput.value = csrfToken;
-      form.appendChild(csrfInput);
+            // Create a POST form
+            var form = document.createElement("form");
 
-      // Razorpay order ID
-      var orderInput = document.createElement('input');
-      orderInput.type = 'hidden';
-      orderInput.name = 'razorpay_order_id';
-      orderInput.value = response.razorpay_order_id;
-      form.appendChild(orderInput);
+            form.method = "POST";
 
-      // Razorpay payment ID
-      var paymentIdInput = document.createElement('input');
-      paymentIdInput.type = 'hidden';
-      paymentIdInput.name = 'razorpay_payment_id';
-      paymentIdInput.value = response.razorpay_payment_id;
-      form.appendChild(paymentIdInput);
+            form.action = "{% url 'payment_success' %}";
 
-     
 
-      document.body.appendChild(form);
-      form.submit();  // Submit to your Django payment_success view
-    },
-    "prefill": {
-      "name": "{{ name }}",
-      "email": "{{ email }}",
-      "contact": "{{ phone }}"
-    },
-    "theme": {
-      "color": "#F37254"
-    }
-  };
+            // -------------------------------------------------
+            // CSRF TOKEN
+            // -------------------------------------------------
 
-  var rzp1 = new Razorpay(options);
-  document.getElementById('razorpay-form').onsubmit = function(e){
-    e.preventDefault();
-    rzp1.open();
-  }
+            var csrfInput = document.createElement("input");
+
+            csrfInput.type = "hidden";
+
+            csrfInput.name = "csrfmiddlewaretoken";
+
+            csrfInput.value = "{{ csrf_token }}";
+
+
+            // -------------------------------------------------
+            // RAZORPAY ORDER ID
+            // -------------------------------------------------
+
+            var orderInput = document.createElement("input");
+
+            orderInput.type = "hidden";
+
+            orderInput.name = "razorpay_order_id";
+
+            orderInput.value =
+                response.razorpay_order_id;
+
+
+            // -------------------------------------------------
+            // RAZORPAY PAYMENT ID
+            // -------------------------------------------------
+
+            var paymentInput = document.createElement("input");
+
+            paymentInput.type = "hidden";
+
+            paymentInput.name = "razorpay_payment_id";
+
+            paymentInput.value =
+                response.razorpay_payment_id;
+
+
+            // -------------------------------------------------
+            // RAZORPAY SIGNATURE
+            // -------------------------------------------------
+
+            var signatureInput = document.createElement("input");
+
+            signatureInput.type = "hidden";
+
+            signatureInput.name = "razorpay_signature";
+
+            signatureInput.value =
+                response.razorpay_signature;
+
+
+            // -------------------------------------------------
+            // Add inputs to form
+            // -------------------------------------------------
+
+            form.appendChild(csrfInput);
+
+            form.appendChild(orderInput);
+
+            form.appendChild(paymentInput);
+
+            form.appendChild(signatureInput);
+
+
+            // Add form to page
+            document.body.appendChild(form);
+
+
+            // Submit payment details to Django
+            form.submit();
+
+        },
+
+
+        // =====================================================
+        // CUSTOMER INFORMATION
+        // =====================================================
+
+        "prefill": {
+
+            "name": "{{ name }}",
+
+            "email": "{{ email }}",
+
+            "contact": "{{ phone }}"
+
+        },
+
+
+        // =====================================================
+        // RAZORPAY THEME
+        // =====================================================
+
+        "theme": {
+
+            "color": "#ff6f00"
+
+        }
+
+    };
+
+
+    // =========================================================
+    // CREATE RAZORPAY INSTANCE
+    // =========================================================
+
+    var rzp1 = new Razorpay(options);
+
+
+    // =========================================================
+    // PAYMENT FAILED
+    // =========================================================
+
+    rzp1.on(
+        'payment.failed',
+        function (response) {
+
+            console.log(
+                "RAZORPAY PAYMENT FAILED:",
+                response
+            );
+
+
+            var errorMessage =
+                "Payment failed.\n\n";
+
+
+            if (response.error) {
+
+                errorMessage +=
+                    "Code: " +
+                    (response.error.code || "N/A") +
+                    "\n";
+
+                errorMessage +=
+                    "Description: " +
+                    (response.error.description || "N/A") +
+                    "\n";
+
+                errorMessage +=
+                    "Reason: " +
+                    (response.error.reason || "N/A");
+
+            }
+
+
+            alert(errorMessage);
+
+        }
+    );
+
+
+    // =========================================================
+    // OPEN RAZORPAY CHECKOUT
+    // =========================================================
+
+    document.getElementById(
+        "rzp-button1"
+    ).onclick = function (e) {
+
+        e.preventDefault();
+
+        rzp1.open();
+
+    };
+
 </script>
+
 {% endblock %}

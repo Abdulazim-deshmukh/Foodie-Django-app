@@ -1,55 +1,440 @@
-{% extends 'base.html' %}
+{% extends 'Base.html' %}
+
+{% block title %}Payment Successful | Foodie{% endblock %}
+
+{% block extra_css %}
+<style>
+    .success-page {
+        min-height: calc(100vh - 180px);
+        padding: 60px 20px 80px;
+        background:
+            radial-gradient(circle at 10% 8%, rgba(255, 239, 224, 0.9), transparent 30%),
+            #faf9f7;
+    }
+
+    .success-wrapper {
+        max-width: 680px;
+        margin: 0 auto;
+    }
+
+    /* ---------------------------------------------------------
+       SUCCESS CARD
+    --------------------------------------------------------- */
+
+    .success-card {
+        overflow: hidden;
+        background: #ffffff;
+        border: 1px solid #ebe4de;
+        border-radius: 22px;
+        box-shadow: 0 14px 40px rgba(35, 24, 17, 0.08);
+    }
+
+    .success-card-body {
+        padding: 42px 36px;
+        text-align: center;
+    }
+
+    /* ---------------------------------------------------------
+       SUCCESS ICON
+    --------------------------------------------------------- */
+
+    .success-icon {
+        width: 76px;
+        height: 76px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 22px;
+        border-radius: 50%;
+        background: #edf8ef;
+        color: #4d8a55;
+        border: 8px solid #f5fbf6;
+        font-size: 2rem;
+    }
+
+    .success-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 14px;
+        margin-bottom: 16px;
+        border-radius: 50px;
+        background: #edf8ef;
+        color: #4d8a55;
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .success-title {
+        margin: 0 0 10px;
+        color: #211b18;
+        font-family: "Playfair Display", serif;
+        font-size: clamp(2.1rem, 5vw, 2.8rem);
+        font-weight: 700;
+    }
+
+    .success-message {
+        max-width: 500px;
+        margin: 0 auto 30px;
+        color: #81766e;
+        font-size: 0.84rem;
+        line-height: 1.7;
+    }
+
+    /* ---------------------------------------------------------
+       ORDER SUMMARY
+    --------------------------------------------------------- */
+
+    .order-summary {
+        padding: 21px;
+        margin-bottom: 24px;
+        background: #faf8f6;
+        border: 1px solid #eee8e2;
+        border-radius: 14px;
+        text-align: left;
+    }
+
+    .summary-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 14px;
+        color: #332b26;
+        font-size: 0.86rem;
+        font-weight: 800;
+    }
+
+    .summary-title i {
+        color: #ed6500;
+    }
+
+    .summary-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee8e2;
+        font-size: 0.76rem;
+    }
+
+    .summary-row:last-child {
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .summary-label {
+        color: #928880;
+    }
+
+    .summary-value {
+        color: #332b26;
+        font-weight: 700;
+        text-align: right;
+        word-break: break-word;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 9px;
+        border-radius: 50px;
+        background: #edf8ef;
+        color: #4d8a55;
+        font-size: 0.62rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .amount-value {
+        color: #e85f00;
+        font-size: 1rem;
+    }
+
+    /* ---------------------------------------------------------
+       ACTIONS
+    --------------------------------------------------------- */
+
+    .success-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .success-btn {
+        min-height: 48px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 0 18px;
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 0.76rem;
+        font-weight: 800;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .success-btn-primary {
+        background: #ff6f00;
+        color: #ffffff;
+        border: 1px solid #ff6f00;
+    }
+
+    .success-btn-primary:hover {
+        background: #e86100;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 10px 24px rgba(255, 111, 0, 0.2);
+    }
+
+    .success-btn-secondary {
+        background: #ffffff;
+        color: #514740;
+        border: 1px solid #ded7d1;
+    }
+
+    .success-btn-secondary:hover {
+        background: #faf8f6;
+        color: #302823;
+        border-color: #cfc6bf;
+        transform: translateY(-1px);
+    }
+
+    /* ---------------------------------------------------------
+       CONFIRMATION NOTE
+    --------------------------------------------------------- */
+
+    .confirmation-note {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 20px;
+        padding: 14px 17px;
+        background: #faf8f6;
+        border: 1px solid #eee8e2;
+        border-radius: 10px;
+        color: #918780;
+        font-size: 0.67rem;
+        line-height: 1.5;
+    }
+
+    .confirmation-note i {
+        flex: 0 0 auto;
+        color: #4d8a55;
+        font-size: 0.82rem;
+    }
+
+    /* ---------------------------------------------------------
+       MOBILE
+    --------------------------------------------------------- */
+
+    @media (max-width: 600px) {
+
+        .success-page {
+            padding: 40px 14px 60px;
+        }
+
+        .success-card-body {
+            padding: 32px 20px;
+        }
+
+        .success-title {
+            font-size: 2.15rem;
+        }
+
+        .success-icon {
+            width: 68px;
+            height: 68px;
+            font-size: 1.8rem;
+        }
+
+        .summary-row {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .summary-value {
+            text-align: left;
+        }
+
+        .success-actions {
+            grid-template-columns: 1fr;
+        }
+
+        .confirmation-note {
+            align-items: flex-start;
+            text-align: left;
+        }
+    }
+</style>
+{% endblock %}
+
 
 {% block content %}
-<style>
-  .status-container {
-    max-width: 600px;
-    margin: auto;
-    background: #e6ffed;
-    padding: 40px;
-    border-radius: 16px;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  }
 
-  .status-container h2 {
-    color: #28a745;
-    font-weight: 700;
-    margin-bottom: 20px;
-  }
+<section class="success-page">
 
-  .status-container p {
-    font-size: 18px;
-    color: #333;
-  }
+    <div class="success-wrapper">
 
-  .order-details {
-    margin-top: 20px;
-    text-align: left;
-  }
+        <div class="success-card">
 
-  .order-details strong {
-    display: inline-block;
-    width: 120px;
-  }
-</style>
+            <div class="success-card-body">
 
-<div class="container py-5">
-  <div class="status-container text-center border rounded p-5 shadow-sm bg-light">
-    <h2 class="text-success mb-4">✅ Payment Successful!</h2>
-    
-    <p class="lead">Thank you for your order, <strong>{{ order.name }}</strong>!</p>
+                <!-- Success Icon -->
+                <div class="success-icon">
+                    <i class="bi bi-check-lg"></i>
+                </div>
 
-    <div class="order-details mt-4 text-start mx-auto" style="max-width: 400px;">
-      <p><strong>🧾 Order No:</strong> {{ order.orderNo }}</p>
-      <p><strong>💰 Total Bill:</strong> ₹{{ order.totalbill }}</p>
-      <p><strong>📦 Status:</strong> {{ order.status }}</p>
+
+                <!-- Success Badge -->
+                <div class="success-badge">
+                    <i class="bi bi-shield-check"></i>
+                    Payment Verified
+                </div>
+
+
+                <!-- Heading -->
+                <h1 class="success-title">
+                    Payment successful.
+                </h1>
+
+
+                <p class="success-message">
+                    Your payment has been verified successfully
+                    and your Foodie order has been confirmed.
+                </p>
+
+
+                <!-- Order Summary -->
+                {% if order %}
+
+                    <div class="order-summary">
+
+                        <div class="summary-title">
+                            <i class="bi bi-receipt"></i>
+                            Order Summary
+                        </div>
+
+
+                        <!-- Order Number -->
+                        <div class="summary-row">
+
+                            <span class="summary-label">
+                                Order Number
+                            </span>
+
+                            <span class="summary-value">
+                                #{{ order.orderNo }}
+                            </span>
+
+                        </div>
+
+
+                        <!-- Order Status -->
+                        <div class="summary-row">
+
+                            <span class="summary-label">
+                                Order Status
+                            </span>
+
+                            <span class="summary-value">
+
+                                <span class="status-badge">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    {{ order.status }}
+                                </span>
+
+                            </span>
+
+                        </div>
+
+
+                        <!-- Payment Status -->
+                        <div class="summary-row">
+
+                            <span class="summary-label">
+                                Payment Status
+                            </span>
+
+                            <span class="summary-value">
+
+                                <span class="status-badge">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    Paid
+                                </span>
+
+                            </span>
+
+                        </div>
+
+
+                        <!-- Amount -->
+                        <div class="summary-row">
+
+                            <span class="summary-label">
+                                Amount Paid
+                            </span>
+
+                            <span class="summary-value amount-value">
+                                ₹{{ order.totalbill|floatformat:2 }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- Actions -->
+                <div class="success-actions">
+
+                    <a
+                        href="{% url 'order_history' %}"
+                        class="success-btn success-btn-primary"
+                    >
+                        <i class="bi bi-receipt"></i>
+                        View My Orders
+                    </a>
+
+
+                    <a
+                        href="{% url 'menu' %}"
+                        class="success-btn success-btn-secondary"
+                    >
+                        <i class="bi bi-grid"></i>
+                        Continue Shopping
+                    </a>
+
+                </div>
+
+
+                <!-- Confirmation Note -->
+                <div class="confirmation-note">
+
+                    <i class="bi bi-envelope-check"></i>
+
+                    <span>
+                        Your order confirmation has been sent
+                        to your registered email address.
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <p class="mt-4">📧 A confirmation email has been sent to <strong>{{ order.customer.emailId }}</strong>.</p>
-
-    <a href="{% url 'order_history' %}" class="btn btn-primary mt-4">View Order History</a>
-  </div>
-</div>
+</section>
 
 {% endblock %}

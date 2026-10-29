@@ -1,35 +1,536 @@
+{% extends 'Base.html' %}
 
-{% extends 'base.html' %}
-{% block title %}Customer List{% endblock %}
+{% block title %}Customers | Foodie{% endblock %}
+
+{% block extra_css %}
+<style>
+    .customers-page {
+        min-height: calc(100vh - 180px);
+        padding: 45px 20px 80px;
+        background:
+            radial-gradient(circle at 8% 5%, rgba(255, 239, 224, 0.85), transparent 28%),
+            #faf9f7;
+    }
+
+    .customers-wrapper {
+        max-width: 1180px;
+        margin: 0 auto;
+    }
+
+    /* ---------------------------------------------------------
+       HEADER
+    --------------------------------------------------------- */
+
+    .customers-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .header-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 11px;
+        margin-bottom: 10px;
+        border-radius: 50px;
+        background: #fff1e6;
+        color: #ed6500;
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+    }
+
+    .customers-header h1 {
+        margin: 0 0 7px;
+        color: #211b18;
+        font-family: "Playfair Display", serif;
+        font-size: clamp(2rem, 4vw, 2.6rem);
+        font-weight: 700;
+    }
+
+    .customers-header p {
+        margin: 0;
+        color: #81766e;
+        font-size: 0.8rem;
+    }
+
+    .menu-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 17px;
+        border: 1px solid #ded7d1;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #403730;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .menu-btn:hover {
+        border-color: #ff6f00;
+        color: #ed6500;
+        background: #fffaf6;
+        transform: translateY(-1px);
+    }
+
+    /* ---------------------------------------------------------
+       CUSTOMER CARD
+    --------------------------------------------------------- */
+
+    .customers-card {
+        overflow: hidden;
+        background: #ffffff;
+        border: 1px solid #ebe4de;
+        border-radius: 18px;
+        box-shadow: 0 12px 35px rgba(35, 24, 17, 0.07);
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .customers-table {
+        width: 100%;
+        min-width: 820px;
+        margin: 0;
+        border-collapse: collapse;
+    }
+
+    .customers-table thead th {
+        padding: 15px 18px;
+        background: #241e1a;
+        color: #ffffff;
+        border: none;
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .customers-table thead th:first-child {
+        padding-left: 24px;
+    }
+
+    .customers-table tbody td {
+        padding: 17px 18px;
+        border-bottom: 1px solid #eee8e2;
+        color: #4b413a;
+        font-size: 0.73rem;
+        vertical-align: middle;
+    }
+
+    .customers-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .customers-table tbody tr {
+        transition: background-color 0.2s ease;
+    }
+
+    .customers-table tbody tr:hover {
+        background: #fffaf6;
+    }
+
+    .counter-cell {
+        padding-left: 24px !important;
+        color: #a09891 !important;
+        font-weight: 700;
+    }
+
+    /* ---------------------------------------------------------
+       CUSTOMER PROFILE
+    --------------------------------------------------------- */
+
+    .customer-profile {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        min-width: 180px;
+    }
+
+    .customer-avatar {
+        width: 40px;
+        height: 40px;
+        flex: 0 0 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #fff1e6;
+        color: #ed6500;
+        border: 1px solid #ffe0c6;
+        font-size: 0.75rem;
+        font-weight: 800;
+    }
+
+    .customer-name {
+        margin-bottom: 2px;
+        color: #302823;
+        font-size: 0.75rem;
+        font-weight: 800;
+    }
+
+    .customer-role {
+        color: #9b9189;
+        font-size: 0.61rem;
+    }
+
+    .email-text {
+        color: #5e554e;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .phone-text,
+    .city-text {
+        color: #5e554e;
+        font-weight: 600;
+    }
+
+    .empty-value {
+        color: #aaa19a;
+        font-size: 0.7rem;
+    }
+
+    .pincode-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 8px;
+        border-radius: 6px;
+        background: #f5f2ef;
+        color: #625950;
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+    }
+
+    /* ---------------------------------------------------------
+       CUSTOMER COUNT
+    --------------------------------------------------------- */
+
+    .customer-count {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-top: 14px;
+        color: #8e847c;
+        font-size: 0.68rem;
+    }
+
+    .customer-count i {
+        color: #ed6500;
+    }
+
+    /* ---------------------------------------------------------
+       EMPTY STATE
+    --------------------------------------------------------- */
+
+    .empty-card {
+        padding: 65px 25px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        width: 90px;
+        height: 90px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: #fff1e6;
+        color: #ed6500;
+        border: 8px solid #fff8f2;
+        font-size: 2rem;
+    }
+
+    .empty-card h2 {
+        margin: 0 0 8px;
+        color: #302823;
+        font-family: "Playfair Display", serif;
+        font-size: 1.65rem;
+    }
+
+    .empty-card p {
+        max-width: 390px;
+        margin: 0 auto;
+        color: #8e847c;
+        font-size: 0.76rem;
+        line-height: 1.7;
+    }
+
+    /* ---------------------------------------------------------
+       RESPONSIVE
+    --------------------------------------------------------- */
+
+    @media (max-width: 768px) {
+
+        .customers-page {
+            padding: 35px 14px 60px;
+        }
+
+        .customers-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .menu-btn {
+            width: 100%;
+        }
+
+        .customers-card {
+            border-radius: 14px;
+        }
+    }
+</style>
+{% endblock %}
+
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">Customer List</h2>
-    <table class="table table-bordered table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Address</th>
-                <th>City</th>
-                <th>Pincode</th>
-                <th>Email ID</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for customer in customers %}
-            <tr>
-                <td>{{ customer.name }}</td>
-                <td>{{ customer.phone }}</td>
-                <td>{{ customer.address }}</td>
-                <td>{{ customer.city }}</td>
-                <td>{{ customer.pincode }}</td>
-                <td>{{ customer.emailId }}</td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="6">No customers found.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-{% endblock %} 
+
+<section class="customers-page">
+
+    <div class="customers-wrapper">
+
+        <!-- Header -->
+
+        <div class="customers-header">
+
+            <div>
+
+                <div class="header-label">
+                    <i class="bi bi-people"></i>
+                    Customer Management
+                </div>
+
+                <h1>Customers</h1>
+
+                <p>
+                    View and manage registered Foodie customers.
+                </p>
+
+            </div>
+
+
+            <a
+                href="{% url 'menu' %}"
+                class="menu-btn"
+            >
+                <i class="bi bi-grid"></i>
+                View Menu
+            </a>
+
+        </div>
+
+
+        {% if customers %}
+
+            <!-- Customer Table -->
+
+            <div class="customers-card">
+
+                <div class="table-container">
+
+                    <table class="customers-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    #
+                                </th>
+
+                                <th>
+                                    Customer
+                                </th>
+
+                                <th>
+                                    Email
+                                </th>
+
+                                <th>
+                                    Phone
+                                </th>
+
+                                <th>
+                                    City
+                                </th>
+
+                                <th>
+                                    PIN Code
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for customer in customers %}
+
+                                <tr>
+
+                                    <td class="counter-cell">
+                                        {{ forloop.counter }}
+                                    </td>
+
+
+                                    <td>
+
+                                        <div class="customer-profile">
+
+                                            <div class="customer-avatar">
+                                                {{ customer.name|first|upper }}
+                                            </div>
+
+                                            <div>
+
+                                                <div class="customer-name">
+                                                    {{ customer.name }}
+                                                </div>
+
+                                                <div class="customer-role">
+                                                    Foodie Customer
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <span class="email-text">
+                                            {{ customer.emailId }}
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if customer.phone %}
+
+                                            <span class="phone-text">
+                                                {{ customer.phone }}
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="empty-value">
+                                                Not provided
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if customer.city %}
+
+                                            <span class="city-text">
+                                                {{ customer.city }}
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="empty-value">
+                                                —
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if customer.pincode %}
+
+                                            <span class="pincode-badge">
+                                                {{ customer.pincode }}
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="empty-value">
+                                                —
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- Customer Count -->
+
+            <div class="customer-count">
+
+                <i class="bi bi-people-fill"></i>
+
+                {{ customers|length }}
+                customer{{ customers|length|pluralize }}
+                registered
+
+            </div>
+
+
+        {% else %}
+
+            <!-- Empty State -->
+
+            <div class="customers-card">
+
+                <div class="empty-card">
+
+                    <div class="empty-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+
+                    <h2>No customers yet</h2>
+
+                    <p>
+                        Registered Foodie customers will appear here
+                        once they create an account.
+                    </p>
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}

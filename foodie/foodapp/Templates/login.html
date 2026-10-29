@@ -1,12 +1,504 @@
-{% extends 'base.html' %}
+
+{% extends "Base.html" %}
+
+{% block title %}Login | Foodie{% endblock %}
+
+{% block extra_css %}
+<style>
+    .login-page {
+        min-height: calc(100vh - 180px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 70px 20px;
+        background:
+            radial-gradient(circle at 10% 20%, rgba(255, 245, 235, 0.9), transparent 35%),
+            radial-gradient(circle at 90% 80%, rgba(255, 237, 220, 0.8), transparent 35%),
+            #faf9f7;
+    }
+
+    .login-wrapper {
+        width: 100%;
+        max-width: 1050px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        background: #ffffff;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 25px 70px rgba(35, 24, 17, 0.12);
+        border: 1px solid #eee8e2;
+    }
+
+    /* LEFT SIDE */
+
+    .login-visual {
+        position: relative;
+        min-height: 600px;
+        padding: 55px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background:
+            linear-gradient(
+                145deg,
+                rgba(255, 111, 0, 0.96),
+                rgba(235, 78, 0, 0.96)
+            );
+        color: #ffffff;
+        overflow: hidden;
+    }
+
+    .login-visual::before {
+        content: "";
+        position: absolute;
+        width: 330px;
+        height: 330px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+        top: -120px;
+        right: -100px;
+    }
+
+    .login-visual::after {
+        content: "";
+        position: absolute;
+        width: 250px;
+        height: 250px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+        bottom: -100px;
+        left: -90px;
+    }
+
+    .visual-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .visual-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 30px;
+    }
+
+    .visual-title {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(2.6rem, 4vw, 4.2rem);
+        line-height: 1.05;
+        margin: 0 0 22px;
+        font-weight: 700;
+    }
+
+    .visual-text {
+        max-width: 390px;
+        color: rgba(255, 255, 255, 0.86);
+        font-size: 1rem;
+        line-height: 1.8;
+        margin: 0;
+    }
+
+    .food-icon {
+        position: relative;
+        z-index: 2;
+        width: 210px;
+        height: 210px;
+        margin: 20px auto 0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        font-size: 6rem;
+        box-shadow:
+            0 20px 50px rgba(70, 20, 0, 0.16),
+            inset 0 0 40px rgba(255, 255, 255, 0.05);
+    }
+
+    .visual-footer {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.82rem;
+        color: rgba(255, 255, 255, 0.78);
+    }
+
+    .visual-footer i {
+        font-size: 1rem;
+    }
+
+    /* RIGHT SIDE */
+
+    .login-form-section {
+        padding: 65px 60px;
+        display: flex;
+        align-items: center;
+    }
+
+    .login-form-container {
+        width: 100%;
+        max-width: 420px;
+        margin: 0 auto;
+    }
+
+    .login-heading {
+        margin-bottom: 35px;
+    }
+
+    .login-heading h1 {
+        font-family: "Playfair Display", serif;
+        font-size: 2.5rem;
+        color: #1f1a17;
+        margin: 0 0 10px;
+        font-weight: 700;
+    }
+
+    .login-heading p {
+        margin: 0;
+        color: #81766e;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .login-form {
+        width: 100%;
+    }
+
+    .form-group {
+        margin-bottom: 22px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 9px;
+        color: #302923;
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #a79d96;
+        font-size: 1rem;
+        pointer-events: none;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        height: 52px;
+        padding: 0 16px 0 46px;
+        border: 1px solid #e3ddd7;
+        border-radius: 12px;
+        background: #fcfbfa;
+        color: #28211d;
+        font-size: 0.94rem;
+        outline: none;
+        transition: all 0.2s ease;
+        box-sizing: border-box;
+    }
+
+    .form-control-custom::placeholder {
+        color: #b1a8a2;
+    }
+
+    .form-control-custom:focus {
+        border-color: #ff6f00;
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(255, 111, 0, 0.09);
+    }
+
+    .login-button {
+        width: 100%;
+        height: 53px;
+        border: none;
+        border-radius: 12px;
+        background: #ff6f00;
+        color: #ffffff;
+        font-size: 0.92rem;
+        font-weight: 800;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 8px;
+    }
+
+    .login-button:hover {
+        background: #e86100;
+        transform: translateY(-1px);
+        box-shadow: 0 10px 25px rgba(255, 111, 0, 0.22);
+    }
+
+    .login-button:active {
+        transform: translateY(0);
+    }
+
+    .login-divider {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 28px 0;
+        color: #aaa19b;
+        font-size: 0.78rem;
+    }
+
+    .login-divider::before,
+    .login-divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: #ebe6e1;
+    }
+
+    .register-prompt {
+        text-align: center;
+        color: #81766e;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .register-prompt a {
+        color: #ff6f00;
+        font-weight: 800;
+        text-decoration: none;
+        margin-left: 4px;
+    }
+
+    .register-prompt a:hover {
+        text-decoration: underline;
+    }
+
+    .login-security {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 7px;
+        margin-top: 24px;
+        color: #9b928c;
+        font-size: 0.76rem;
+    }
+
+    .login-security i {
+        color: #6d9c71;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 850px) {
+        .login-wrapper {
+            grid-template-columns: 1fr;
+            max-width: 560px;
+        }
+
+        .login-visual {
+            min-height: 330px;
+            padding: 40px;
+        }
+
+        .visual-title {
+            font-size: 2.7rem;
+        }
+
+        .visual-text {
+            max-width: 460px;
+        }
+
+        .food-icon {
+            display: none;
+        }
+
+        .visual-footer {
+            margin-top: 35px;
+        }
+
+        .login-form-section {
+            padding: 50px 40px;
+        }
+    }
+
+    @media (max-width: 500px) {
+        .login-page {
+            padding: 35px 14px;
+        }
+
+        .login-wrapper {
+            border-radius: 20px;
+        }
+
+        .login-visual {
+            min-height: auto;
+            padding: 32px 25px;
+        }
+
+        .visual-label {
+            margin-bottom: 20px;
+        }
+
+        .visual-title {
+            font-size: 2.25rem;
+        }
+
+        .visual-text {
+            font-size: 0.9rem;
+        }
+
+        .login-form-section {
+            padding: 40px 25px;
+        }
+
+        .login-heading h1 {
+            font-size: 2.15rem;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<h2>Login</h2>
-<form method="post">
-    {% csrf_token %}
-    <label>Email:</label><br>
-    <input type="text" name="email"><br>
-    <label>Password:</label><br>
-    <input type="password" name="password"><br><br>
-    <input type="submit" value="Login">
-</form>
+
+<section class="login-page">
+
+    <div class="login-wrapper">
+
+        <!-- LEFT SIDE -->
+        <div class="login-visual">
+
+            <div class="visual-content">
+
+                <div class="visual-label">
+                    <i class="bi bi-stars"></i>
+                    Welcome back
+                </div>
+
+                <h2 class="visual-title">
+                    Good food.<br>
+                    Good mood.
+                </h2>
+
+                <p class="visual-text">
+                    Sign in to continue exploring delicious meals,
+                    manage your cart, and keep your Foodie orders
+                    in one place.
+                </p>
+
+            </div>
+
+            <div class="food-icon">
+                🍽️
+            </div>
+
+            <div class="visual-footer">
+                <i class="bi bi-check-circle-fill"></i>
+                Fresh food • Easy ordering • Happy eating
+            </div>
+
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div class="login-form-section">
+
+            <div class="login-form-container">
+
+                <div class="login-heading">
+                    <h1>Welcome back</h1>
+                    <p>Enter your details to access your Foodie account.</p>
+                </div>
+
+                <form method="POST" action="{% url 'login' %}" class="login-form">
+
+                    {% csrf_token %}
+
+                    <div class="form-group">
+
+                        <label for="email" class="form-label">
+                            Email address
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="bi bi-envelope input-icon"></i>
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                class="form-control-custom"
+                                placeholder="you@example.com"
+                                autocomplete="email"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="password" class="form-label">
+                            Password
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="bi bi-lock input-icon"></i>
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                class="form-control-custom"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="login-button">
+                        Sign In
+                        <i class="bi bi-arrow-right ms-1"></i>
+                    </button>
+
+                </form>
+
+                <div class="login-divider">
+                    <span>New to Foodie?</span>
+                </div>
+
+                <p class="register-prompt">
+                    Create your account
+                    <a href="{% url 'register' %}">Register</a>
+                </p>
+
+                <div class="login-security">
+                    <i class="bi bi-shield-check"></i>
+                    Secure account authentication
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
 {% endblock %}
